@@ -1,0 +1,3 @@
+GOOGLE_API_YT_KEY = ''
+
+BOT_TOKEN = ''
