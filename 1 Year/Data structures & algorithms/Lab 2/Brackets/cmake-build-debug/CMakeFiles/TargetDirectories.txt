@@ -1,3 +1,0 @@
-C:/Users/1/Study/Data structures & algorithms/Lab 2/Brackets/cmake-build-debug/CMakeFiles/edit_cache.dir
-C:/Users/1/Study/Data structures & algorithms/Lab 2/Brackets/cmake-build-debug/CMakeFiles/Brackets.dir
-C:/Users/1/Study/Data structures & algorithms/Lab 2/Brackets/cmake-build-debug/CMakeFiles/rebuild_cache.dir

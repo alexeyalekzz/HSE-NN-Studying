@@ -1,3 +1,0 @@
-C:/Users/1/Study/Data structures & algorithms/Lab 1/Radix sort x16/cmake-build-debug/CMakeFiles/untitled3.dir
-C:/Users/1/Study/Data structures & algorithms/Lab 1/Radix sort x16/cmake-build-debug/CMakeFiles/edit_cache.dir
-C:/Users/1/Study/Data structures & algorithms/Lab 1/Radix sort x16/cmake-build-debug/CMakeFiles/rebuild_cache.dir

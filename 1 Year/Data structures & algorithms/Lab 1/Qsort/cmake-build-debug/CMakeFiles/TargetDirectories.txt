@@ -1,3 +1,0 @@
-C:/Users/1/Study/Data structures & algorithms/Qsort/cmake-build-debug/CMakeFiles/edit_cache.dir
-C:/Users/1/Study/Data structures & algorithms/Qsort/cmake-build-debug/CMakeFiles/Qsort.dir
-C:/Users/1/Study/Data structures & algorithms/Qsort/cmake-build-debug/CMakeFiles/rebuild_cache.dir
