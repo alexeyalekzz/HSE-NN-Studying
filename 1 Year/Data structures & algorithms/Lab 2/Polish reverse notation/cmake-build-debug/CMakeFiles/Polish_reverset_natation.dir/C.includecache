@@ -1,0 +1,16 @@
+#IncludeRegexLine: ^[ 	]*[#%][ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+C:/Users/1/Study/Data structures & algorithms/Lab 2/Polish reverse notation/main.c
+stdio.h
+-
+stdlib.h
+-
+math.h
+-
+

@@ -1,0 +1,3 @@
+C:/Users/1/Study/Data structures & algorithms/Lab 2/Doubling seacrh/cmake-build-debug/CMakeFiles/Doubling_seacrh.dir
+C:/Users/1/Study/Data structures & algorithms/Lab 2/Doubling seacrh/cmake-build-debug/CMakeFiles/edit_cache.dir
+C:/Users/1/Study/Data structures & algorithms/Lab 2/Doubling seacrh/cmake-build-debug/CMakeFiles/rebuild_cache.dir
