@@ -17,9 +17,9 @@ do
 
             "0" )
             if [ "$usr" = "paper" ] ; then 
-                echo "You win!"
+                echo -e "\e[32mYou win!\e[0m"
             elif [ "$usr" = "scissors" ] ; then
-                echo "You lose!"
+                echo -e "\e[31mYou lose!\e[0m"
             elif [ "$usr" = "rock" ] ; then   
                 echo "Draw!"
             else 
@@ -29,9 +29,9 @@ do
 
             "1" )
             if [ "$usr" = "scissors" ] ; then 
-                echo "You win!"
+                echo -e "\e[32mYou win!\e[0m"
             elif [ "$usr" = "rock" ] ; then
-                echo "You lose!"
+                echo -e "\e[31mYou lose!\e[0m"
             elif [ "$usr" = "paper" ] ; then   
                 echo "Draw!"
             else 
@@ -41,9 +41,9 @@ do
 
             "2" )
             if [ "$usr" = "rock" ] ; then 
-                echo "You win!"
+                echo -e "\e[32mYou win!\e[0m"
             elif [ "$usr" = "paper" ] ; then
-                echo "You lose!"
+                echo -e "\e[31mYou lose!\e[0m"
             elif [ "$usr" = "scissors" ] ; then   
                 echo "Draw!"
             else 
@@ -53,7 +53,7 @@ do
         esac
     else
         if [ "$usr" = "rock" -o "$usr" = "paper" -o "$usr" = "scissors" ] ; then 
-            echo "You lose!"
+            echo -e "\e[31mYou lose!\e[0m"
         else 
             echo "Write only rock, paper or scissors!"
         fi
