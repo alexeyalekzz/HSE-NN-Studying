@@ -12,51 +12,61 @@ do
 
     if [ $cheat -gt 56 ] ; then
         a=$(($RANDOM % 3))
-
-        case "$a" in 
-
-            "0" )
-            if [ "$usr" = "paper" ] ; then 
-                echo -e "\e[32mYou win!\e[0m"
-            elif [ "$usr" = "scissors" ] ; then
-                echo -e "\e[31mYou lose!\e[0m"
-            elif [ "$usr" = "rock" ] ; then   
-                echo "Draw!"
-            else 
-                echo "Write only rock, paper or scissors!"
-            fi
-            ;;
-
-            "1" )
-            if [ "$usr" = "scissors" ] ; then 
-                echo -e "\e[32mYou win!\e[0m"
-            elif [ "$usr" = "rock" ] ; then
-                echo -e "\e[31mYou lose!\e[0m"
-            elif [ "$usr" = "paper" ] ; then   
-                echo "Draw!"
-            else 
-                echo "Write only rock, paper or scissors!"
-            fi
-            ;;
-
-            "2" )
-            if [ "$usr" = "rock" ] ; then 
-                echo -e "\e[32mYou win!\e[0m"
-            elif [ "$usr" = "paper" ] ; then
-                echo -e "\e[31mYou lose!\e[0m"
-            elif [ "$usr" = "scissors" ] ; then   
-                echo "Draw!"
-            else 
-                echo "Write only rock, paper or scissors!"
-            fi
-            ;;
-        esac
     else
-        if [ "$usr" = "rock" -o "$usr" = "paper" -o "$usr" = "scissors" ] ; then 
-            echo -e "\e[31mYou lose!\e[0m"
+        case "$usr" in 
+        "rock" )
+        a="1"
+        ;;
+
+        "paper" )
+        a="2"
+        ;;
+
+        "scissors" )
+        a="0"
+        ;;
+        esac
+    fi    
+
+
+
+    case "$a" in 
+
+        "0" )
+        if [ "$usr" = "paper" ] ; then 
+            echo -e "You win!"
+        elif [ "$usr" = "scissors" ] ; then
+            echo -e "You lose!"
+        elif [ "$usr" = "rock" ] ; then   
+            echo "Draw!"
         else 
             echo "Write only rock, paper or scissors!"
         fi
-    fi    
+        ;;
+
+        "1" )
+        if [ "$usr" = "scissors" ] ; then 
+            echo -e "You win!"
+        elif [ "$usr" = "rock" ] ; then
+            echo -e "You lose!"
+        elif [ "$usr" = "paper" ] ; then   
+            echo "Draw!"
+        else 
+            echo "Write only rock, paper or scissors!"
+        fi
+        ;;
+
+        "2" )
+        if [ "$usr" = "rock" ] ; then 
+            echo -e "You win!"
+        elif [ "$usr" = "paper" ] ; then
+            echo -e "You lose!"
+        elif [ "$usr" = "scissors" ] ; then   
+            echo "Draw!"
+        else 
+            echo "Write only rock, paper or scissors!"
+        fi
+        ;;
+    esac
 
 done
