@@ -1,0 +1,4 @@
+C:/Users/1/Desktop/Ex04/cmake-build-debug/CMakeFiles/task1.dir
+C:/Users/1/Desktop/Ex04/cmake-build-debug/CMakeFiles/task1_lib.dir
+C:/Users/1/Desktop/Ex04/cmake-build-debug/CMakeFiles/edit_cache.dir
+C:/Users/1/Desktop/Ex04/cmake-build-debug/CMakeFiles/rebuild_cache.dir
