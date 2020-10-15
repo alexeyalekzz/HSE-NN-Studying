@@ -1,0 +1,2 @@
+C:\Users\1\Study\MinGW\bin\ar.exe qc libtask1_lib.a  CMakeFiles/task1_lib.dir/src/task1.cpp.obj
+C:\Users\1\Study\MinGW\bin\ranlib.exe libtask1_lib.a

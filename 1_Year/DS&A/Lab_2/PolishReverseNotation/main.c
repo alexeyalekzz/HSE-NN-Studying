@@ -20,6 +20,7 @@ Node *pop(Node* phead){
     free(phead);
     return p;
 }
+
 int IsEmpty(Node *phead){
     if(phead)
         return 0;

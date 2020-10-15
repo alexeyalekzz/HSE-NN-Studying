@@ -3,4 +3,4 @@ project(Polish_reverset_natation C)
 
 set(CMAKE_C_STANDARD 99)
 
-add_executable(Polish_reverset_natation main.c)
+add_executable(Polish_reverset_natation main.c PRN.c PRN.h)
