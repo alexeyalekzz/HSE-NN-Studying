@@ -1,3 +1,5 @@
+#!/bin/bash
+
 filename=hwshgen.c
 exec=hwshgen.run
 

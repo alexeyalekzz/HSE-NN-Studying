@@ -33,7 +33,7 @@ function wrong_input() {
 
 function scan() {
 
-local inv="»"
+local inv=">>"
 
     echo -en "\e[1;33m$inv\e[0m"
     read $1
@@ -56,9 +56,9 @@ function copy() {
     fi
 
     Done
-    }
+}
 
-    function del() {
+function del() {
 
     local err="", name=""
 
@@ -153,7 +153,7 @@ function main() {
     ;;
 
     "dir" )
-    ls —color=always
+    ls --color=always
     echo
     ;;
 
