@@ -1,4 +1,7 @@
 #include <iostream>
+#include <cstring>
+#include <iterator>
+#include <utility>
 #include "task1.h"
 
 
