@@ -13,8 +13,8 @@ DateTime::DateTime() {
 	time = std::time(nullptr);
 }
 
-DateTime::DateTime(DateTime const &t) {
-	this->time = t.time;
+DateTime::DateTime(DateTime const &time) {
+	this->time = time.time;
 }
 
 DateTime::DateTime(unsigned _day, unsigned _month, unsigned _year) {
@@ -43,47 +43,27 @@ std::string DateTime::getToday() const {
 }
 
 std::string DateTime::getYesterday() const {
-	auto buf = new char[100];
-	time_t yesterday = time - SEC_IN_DAY;
-	struct tm *t = std::localtime(&yesterday);
-	std::strftime(buf, 100, "%d %B 20%y, %A", t);
-	to_lovercase(buf);
-
-	return buf;
+	return this->getPast(1);
 }
 
 std::string DateTime::getTomorrow() const {
-	auto buf = new char[100];
-	time_t tomorrow = time + SEC_IN_DAY;
-	struct tm *t = std::localtime(&tomorrow);
-	std::strftime(buf, 100, "%d %B 20%y, %A", t);
-	to_lovercase(buf);
-
-	return buf;
+	return this->getFuture(1);
 }
 
 std::string DateTime::getFuture(unsigned int N) const {
-	auto buf = new char[100];
-	time_t future = time + N * SEC_IN_DAY;
-	struct tm *t = std::localtime(&future);
-	std::strftime(buf, 100, "%d %B 20%y, %A", t);
-	to_lovercase(buf);
+	DateTime temp(*this);
+	temp.time = this->time + N * SEC_IN_DAY;
 
-	return buf;
+	return temp.getToday();
 }
 
 std::string DateTime::getPast(unsigned int N) const {
-	auto buf = new char[100];
-	time_t past = time - N * SEC_IN_DAY;
-	struct tm *t = std::localtime(&past);
-	std::strftime(buf, 100, "%d %B 20%y, %A", t);
-	to_lovercase(buf);
+	DateTime temp(*this);
+	temp.time = this->time - N * SEC_IN_DAY;
 
-	return buf;
+	return temp.getToday();
 }
 
 unsigned int DateTime::getDifference(DateTime &diff) const {
-	auto res = std::abs(time - diff.time);
-
-	return res / SEC_IN_DAY;
+	return std::abs(time - diff.time) / SEC_IN_DAY;
 }
