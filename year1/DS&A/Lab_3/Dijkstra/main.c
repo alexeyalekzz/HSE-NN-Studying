@@ -78,16 +78,4 @@ void Dijkstra (int a[][s], int start, int N){
 
     for (i = 0; i < N; i++)
         printf("%d ", dest[i]);
-    /*l = 1;
-    lol[k] = l;
-    k++;
-    do{
-        lol[k] = prev[l];
-        k++;
-        l = prev[l];
-    }while (prev[l] != c);
-    lol[k] = c;
-    printf("\n");
-    for (l = k; l >= 0; l--)
-        printf("%d ", lol[l]);*/
 }
