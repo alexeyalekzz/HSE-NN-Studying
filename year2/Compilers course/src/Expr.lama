@@ -1,0 +1,192 @@
+-- Expression evaluator
+
+import List;
+import State;
+import World;
+import Lexer;
+import Parser;
+
+-- As association map which maps "\otimes" into "\oplus"
+local ops = {
+  ["+" , infix + ],
+  ["-" , infix - ],
+  ["*" , infix * ],
+  ["/" , infix / ],
+  ["%" , infix % ],
+  ["==", infix ==],
+  ["!=", infix !=],
+  ["<" , infix < ],
+  ["<=", infix <=],
+  [">" , infix > ],
+  [">=", infix >=],
+  ["&&", infix &&],
+  ["!!", infix !!]
+};
+
+-- The evaluator for infix operators: takes an operator as a string
+-- and two operand values, and returns the result
+public fun evalOp (op, l, r) {
+  case assoc (ops, op) of
+    Some (f) -> f (l, r)
+  esac
+}
+
+-- Evaluates an expression "expr" in a configuration "c".
+-- A configuration is a pair of a state "s" and a world "w".
+-- Returns a final configuration (if any)
+--
+-- A expression is represented by a data structure of the following shape:
+--
+-- expr = Assn   (string, expr)       |
+--        Seq    (expr, expr)         |
+--        Skip                        |
+--        Read   (string)             |
+--        Write  (expr)               |
+--        if     (expr, expr, expr)   |
+--        While  (expr, expr)         |
+--        Repeat (expr, expr)         |
+--        Var    (string)             |
+--        Ref    (string)             |
+--        Const  (int)                |
+--        Binop  (string, expr, expr) |
+--        Scope  (def list, expr)     |
+--        Call   (string, expr list)  |
+--        Ignore (expr)
+--
+-- A definition is either a local variable definition or a function
+-- definition:
+--
+-- def = Local (string list)                |
+--       Fun   (string, string list, expr)
+
+-- Helper function: checks that given name designates a regular variable in
+-- a given state
+fun checkVar (state, name) {
+  case state.lookup (name) of
+    Var (_) -> skip
+  | _       -> error (sprintf ("the name ""%s"" does not designate a variable", name), getLoc (name))
+  esac
+}
+
+-- Helper function: checks that given name designates a function in
+-- a given state
+fun checkFun (state, name) {
+  case state.lookup (name) of
+    Fun (_, _) -> skip
+  | _          -> error (sprintf ("the name ""%s"" does not designate a function", name), getLoc (name))
+  esac
+}
+
+-- Helper function: adds a bunch of regular variables current scope
+fun addNames (state, names) {
+  foldl (fun (s, name) {s.addName (name, Var (0))}, state, names)
+}
+
+-- Helper function: adds a function in current scope
+fun addFunction (state, name, args, body) {
+  state.addName (name, Fun (args, body))
+}
+                                        
+-- Evaluates a list of expressions, properly threading a configurations.
+-- Returns the final configuration and the list of values
+fun evalList (c, exprs) {
+  case foldl (fun ([c, vals], e) {
+                case eval (c, e) of
+                  [c, val] -> [c, val : vals]
+                esac
+              },
+              [c, {}],
+              exprs) of
+    [c, vals] -> [c, reverse (vals)]
+  esac
+}
+
+fun eval (c@[s, w], expr) {
+  case expr of
+    Skip                  ->  [ c, Void ]
+  | Var      (x)          ->  [ c, lookup(s, x) ]
+  | Const    (n)          ->  [ c, n ]
+  | Ref      (x)          ->  [ c, x ]
+
+  | Ignore   (e)          ->  case eval(c, e) of [c, _] ->
+                                [ c, Void ]
+                              esac
+
+  | Read     (x)          ->  case readWorld (w) of [val, new_w] ->
+                                [ [s <- [x, val], new_w], Void ]
+                              esac
+
+  | Write    (e)          ->  case eval(c, e) of [[s, w], val] ->
+                                [ [s, writeWorld (val, w)], Void ]
+                              esac
+
+  | Binop    (op, l, r)   ->  case evalList(c, {l, r}) of [c, lval:rval:_] ->
+                                [ c, evalOp(op, lval, rval) ]
+                              esac
+
+  | Assn     (x, e)       ->  case evalList(c, {x, e}) of [[s, w], ref:val:_] ->
+                                [ [s <- [ref, val], w], val ]
+                              esac
+
+  | Seq      (e1, e2)     ->  case evalList(c, {e1, e2}) of [c, _:res:_] ->
+                                [ c, res ]
+                              esac
+
+  | If     (cond, b1, b2) ->  case eval(c, cond) of [c, val] ->
+                                if val then
+                                  eval(c, b1)
+                                else
+                                  eval(c, b2)
+                                fi
+                              esac
+
+  | wh@While (cond, body) ->  case eval(c, cond) of [c, val] ->
+                                if val then
+                                  case eval(c, body) of [c, _] -> eval(c, wh) esac
+                                else
+                                  [ c, Void ]
+                                fi
+                              esac
+
+  | r@Repeat (body, cond) ->  case evalList(c, {body, cond}) of [c, _:val:_] ->
+                                if val then
+                                  [ c, Void ]
+                                else
+                                  eval(c, r)
+                                fi
+                              esac
+
+  | Local    (llist)      ->  [ [addNames(s, llist), w], Void ]
+
+  | Scope    (defs, e)    ->  case evalList([enterScope(s), w], defs) of [c, _] ->
+                                case eval(c, e) of [ [s, w], val] ->
+                                  [ [leaveScope(s), w], val ]
+                                esac
+                              esac
+
+  | Fun(name, args, body) ->  [ [addFunction(s, name, args, body), w], Void ]
+
+  | Call     (name, e)    ->  checkFun(s, name);
+                              case lookup(s, name) of Fun(args, body) ->
+                                case evalList(c, e) of [c, vals] ->
+                                  case foldl(fun (s, [arg, val]) {
+                                                addName(s, arg, val)
+                                             }, enterFunction(s), zip(args, vals)) of fs ->
+                                    case eval([fs, w], body) of [[fs, w], e] ->
+                                      [ [leaveFunction(s, fs.getGlobal), w], e ]
+                                    esac
+                                  esac
+                                esac
+                              esac
+
+  | _ -> failure("expression: %s is not yet implemented\n", expr.string)
+  esac
+}
+
+
+-- Evaluates a program with a given input and returns an output
+public fun evalExpr (input, expr) {
+  case eval ([emptyState (), createWorld (input)], expr) of
+    [c, _] -> c.snd.getOutput
+  esac
+}
