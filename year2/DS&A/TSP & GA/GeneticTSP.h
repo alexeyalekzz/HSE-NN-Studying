@@ -30,6 +30,17 @@ constexpr int combination(int n, int k) {
 constexpr int CHILDREN_N = combination(PARENTS_N, 2) * 2;
 
 
+bool is_prime(unsigned long a) {
+  unsigned long i;
+  if (a == 2)
+    return true;
+  if (a == 0 || a == 1 || a % 2 == 0)
+    return false;
+  for(i = 3; i*i <= a && a % i; i += 2) {}
+  return i*i > a;
+}
+
+
 using chromosome = std::vector<int>;
 template<size_t size>
 using group = std::array<chromosome, size>;
@@ -76,7 +87,16 @@ class Genetic {
     delete[] data;
   }
 
-  [[nodiscard]] chromosome start_genetics() const;
+  [[nodiscard]] std::string print_solution(const chromosome& c) const {
+    std::string res;
+    for (auto& n : c)
+      (res += std::to_string(n)) += ' ';
+    res += '\n';
+    res += std::to_string(cost(c));
+    return res += '\n';
+  }
+
+  [[nodiscard]] chromosome start_genetics(int max_iters) const;
 
  private:
   /* Chromosome */
@@ -85,8 +105,6 @@ class Genetic {
   static void init(chromosome& s);
   static void mutate(chromosome& s);
   static void cycle_crossover(const chromosome& p1, const chromosome& p2, chromosome& c1, chromosome& c2);
-  static void partially_mapped_crossover(const chromosome& p1, const chromosome& p2, chromosome& c1, chromosome& c2);
-  static void order_one_crossover(const chromosome& p1, const chromosome& p2, chromosome& c1, chromosome& c2);
   /*************/
 
 
@@ -94,9 +112,7 @@ class Genetic {
   [[nodiscard]] group<PARENTS_N> tournament_selection(const group<POP_SIZE>& g) const;
   [[nodiscard]] chromosome find_best(const group<POP_SIZE>& g) const;
   [[nodiscard]] group<CHILDREN_N> reproduction(const group<POP_SIZE>& g) const;
-  static group<POP_SIZE> build_next_delete_all(group<POP_SIZE>& p, group<CHILDREN_N>& c);
-  static group<POP_SIZE> build_next_steady_state(group<POP_SIZE>& p, group<CHILDREN_N>& c);
-  static group<POP_SIZE> build_next_steady_state_no_dup(group<POP_SIZE>& p, group<CHILDREN_N>& c);
+  group<POP_SIZE> build_next_steady_state(group<POP_SIZE>& p, group<CHILDREN_N>& c) const;
   static void initialize(group<POP_SIZE>& g);
   template<size_t size> static void modification(group<size>& g);
   template<size_t size> void evaluation(group<size>& g) const;

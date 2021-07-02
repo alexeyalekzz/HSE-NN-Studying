@@ -5,8 +5,13 @@
 /**********************         Cromosome        ************************/
 double Genetic::cost(const chromosome& s) const {
   double res = 0;
-  for (int i = 1; i < SIZE; ++i)
-    res += data[s[i - 1]][s[i]];
+  for (int i = 1; i < SIZE; ++i) {
+    double length = data[s[i - 1]][s[i]];
+    if (i % 10 == 0 && !is_prime(i))
+      res += length * 1.1;
+    else
+      res += length;
+  }
   res += data[s[0]][s[SIZE - 1]];
   return res;
 }
@@ -91,17 +96,17 @@ void Genetic::mutate(chromosome& s) {
 
     } while (p1 == p2);
 
-    auto temp = s[p1];
+    int temp = s[p1];
     s[p1] = s[p2];
     s[p2] = temp;
   }
 }
 
 void Genetic::cycle_crossover(const chromosome& p1, const chromosome& p2, chromosome& c1, chromosome& c2) {
-  int n = 0;
   c1.resize(SIZE, -1);
   c2.resize(SIZE, -1);
 
+  int n = 0;
   do {
     int t = p2[n];
     c1[n] = p1[n];
@@ -136,18 +141,19 @@ void Genetic::initialize(group<POP_SIZE>& g) {
     init(ch);
 }
 
-group<POP_SIZE> Genetic::build_next_delete_all(group<POP_SIZE>& p, group<CHILDREN_N>& c) {
-  static std::mt19937 gen(time(nullptr));
+group<POP_SIZE> Genetic::build_next_steady_state(group<POP_SIZE>& p, group<CHILDREN_N>& c) const {
+  constexpr int N = 12;
   group<POP_SIZE> res;
-  chromosome* arr[CHILDREN_N];
 
-  for (int i = 0; i < CHILDREN_N; ++i)
-    arr[i] = &c[i];
+  std::sort(p.begin(), p.end(), [this](auto c1, auto c2) {
+    return cost(c1) < cost(c2);
+  });
 
-  std::shuffle(arr, arr + CHILDREN_N, gen);
+  for (int i = 0; i < N; ++i)
+    res[i] = std::move(p[i]);
 
-  for (int i = 0; i < POP_SIZE; ++i)
-    res[i] = std::move(*arr[i]);
+  for (int i = N; i < POP_SIZE; ++i)
+    res[i] = std::move(c[i]);
 
   return res;
 }
@@ -180,7 +186,7 @@ group<PARENTS_N> Genetic::tournament_selection(const group<POP_SIZE>& g) const {
     int indx = 0;
     double best_cost = cost(*selection[0]);
     for (int i{1}; i < SELECTION_SIZE; ++i) {
-      if (auto c = cost(*selection[i]); c > best_cost + EPS) {
+      if (double c = cost(*selection[i]); c > best_cost + EPS) {
         indx = i;
         best_cost = c;
       }
@@ -192,7 +198,7 @@ group<PARENTS_N> Genetic::tournament_selection(const group<POP_SIZE>& g) const {
 }
 
 chromosome Genetic::find_best(const group<POP_SIZE>& g) const {
-  auto best = g[0];
+  chromosome best = g[0];
   for (auto& ch : g)
     if (cost(ch) > cost(best) + EPS)
       best = ch;
@@ -201,8 +207,7 @@ chromosome Genetic::find_best(const group<POP_SIZE>& g) const {
 /***********************        Group        ***************************/
 
 
-chromosome Genetic::start_genetics() const {
-  constexpr int max_iters = 10000;
+chromosome Genetic::start_genetics(int max_iters) const {
   size_t iters = 0;
   group<POP_SIZE> population;
 
@@ -212,16 +217,12 @@ chromosome Genetic::start_genetics() const {
   chromosome best = population[0];
 
   while (iters < max_iters) {
-    std::cout << cost(find_best(population)) << std::endl;
-
     group<CHILDREN_N> childrens = reproduction(population);
     Genetic::modification(childrens);
     Genetic::evaluation(childrens);
-    population = Genetic::build_next_delete_all(population, childrens);
-    // population = Genetic::build_next_steady_state(population, children);
-    // population = Genetic::build_next_steady_state_no_dup(population, children);
+    population = Genetic::build_next_steady_state(population, childrens);
 
-    if (auto c = find_best(population); cost(c) < cost(best)) {
+    if (chromosome c = find_best(population); cost(c) < cost(best)) {
       best = c;
       std::cout << cost(c) << std::endl;
     }
@@ -232,11 +233,14 @@ chromosome Genetic::start_genetics() const {
   return best;
 }
 
+
 int main() {
   Genetic problem("data.txt");
 
   std::cout << "Started\n";
-  chromosome solution = problem.start_genetics();
+  chromosome solution = problem.start_genetics(10000);
+
+  std::cout << problem.print_solution(solution);
 
   return 0;
 }
