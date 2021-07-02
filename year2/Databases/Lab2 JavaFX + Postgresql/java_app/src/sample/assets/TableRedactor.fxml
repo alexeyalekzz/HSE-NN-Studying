@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.control.ToolBar?>
+<?import javafx.scene.layout.AnchorPane?>
+
+<AnchorPane prefHeight="572.0" prefWidth="940.0" style="-fx-background-color: #FFE4B5;" xmlns="http://javafx.com/javafx/16" xmlns:fx="http://javafx.com/fxml/1" fx:controller="sample.controllers.TableRedactorController">
+   <children>
+      <Label layoutX="57.0" layoutY="51.0" text="Название таблицы: " />
+      <TextField fx:id="TableNameField" layoutX="187.0" layoutY="47.0" />
+      <Label fx:id="ErrorLabel" layoutX="369.0" layoutY="51.0" prefHeight="19.0" prefWidth="133.0" textFill="RED" />
+      <TableView fx:id="tableView" layoutX="93.0" layoutY="141.0" prefHeight="222.0" prefWidth="754.0" />
+      <Button fx:id="addRowButton" layoutX="828.0" layoutY="450.0" mnemonicParsing="false" prefHeight="34.0" prefWidth="84.0" text="Добавить" />
+      <ToolBar fx:id="toolBar" layoutY="390.0" prefHeight="40.0" prefWidth="940.0" />
+      <Button fx:id="deleteTableButton" layoutX="726.0" layoutY="24.0" mnemonicParsing="false" prefHeight="27.0" prefWidth="198.0" style="-fx-background-color: #FF5555;" text="Удалить таблицу" textAlignment="CENTER" />
+      <Button fx:id="saveChangesButton" layoutX="686.0" layoutY="523.0" mnemonicParsing="false" prefHeight="27.0" prefWidth="237.0" text="Сохранить и выйти" />
+      <Button fx:id="clearTableButton" layoutX="726.0" layoutY="57.0" mnemonicParsing="false" prefHeight="27.0" prefWidth="198.0" text="Очистить таблицу" />
+      <Label fx:id="psqlErrorLabel" alignment="CENTER" layoutX="42.0" layoutY="366.0" prefHeight="19.0" prefWidth="856.0" textFill="RED" />
+   </children>
+</AnchorPane>
