@@ -1,0 +1,3065 @@
+<!--
+<!--
+/********************************************************************
+ *
+ * $Id: CarConfigurator, v 1.1 2012/03/20 16:01:28
+ *
+ * Copyright (C) 2012 - 2013 Quality First Software
+ * All rights reserved
+ *
+ * Author: QFS (qfs@qfs.de), Yann Spoeri
+ *******************************************************************/
+-->
+
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+ <!-- {{{ Head Data: title; script-, css- include; loading of JQuery-Components -->
+ <head>
+  <!-- {{{ title and includes -->
+  <title>WebCarConfigurator</title>
+  <!-- charset -->
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <!-- Language Control -->
+  <script type="text/javascript" src="include/language.js"></script>
+  <!-- Load File for the Menubar -->
+  <link type="text/css" href="include/menubar.css" rel="stylesheet" />
+  <script type="text/javascript" src="include/menubar.js"></script>
+  <!-- calculation and other logic functions -->
+  <script type="text/javascript" src="include/logic.js"></script>
+  <!-- JQuery include and configuration -->
+  <script type="text/javascript" src="include/jquery-1.7.2.min.js"></script>
+  <script type="text/javascript" src="include/jquery-ui-1.8.23.custom.min.js"></script>
+  <link type="text/css" href="include/jquery-ui-1.8.18.custom.css" rel="stylesheet" />
+  <link type="text/css" href="include/general.css" rel="stylesheet" />
+  <!-- }}} -->
+  <!-- {{{ Loading the jQuery UI components of this website -->
+  <script type="text/javascript">
+    // <!--
+      // jQuery load functions
+      $(function() {
+       // some JQuery Objects
+        // Edit Panels (must use eval for inserting the right button names)
+        // Vechicle Dialog Panel
+        eval("$( '#VehiclesDialogTablePanel_dialog' ).dialog({" +
+            "autoOpen: false," +
+            "resizable: true," +
+            "width: \"600px\"," +
+            "height: \"550\"," +
+            "modal: true," +
+            "open: function() { initVehicleDialogEditPanel(true); }," +
+            "buttons: {" +
+                "'NewButton': {" +
+                    "text: '" + getLanguageStringbyIdStr("ButtonNew") + "', " +
+                    "id: 'NewButton1', " +
+                    "click: function() { createNewVehicle(); }" +
+                "}," +
+                "'ChangeButton': {" +
+                    "text: '" + getLanguageStringbyIdStr("ButtonEdit") + "', " +
+                    "id: 'ChangeButton1', " +
+                    "click: function() { editVehicle(); }" +
+                "}," +
+                "'DeleteButton': {" +
+                    "text: '" + getLanguageStringbyIdStr("ButtonDelete") + "', " +
+                    "id: 'DeleteButton1', " +
+                    "click: function() { deleteVehicle(); }" +
+                "}," +
+                "'OkButton': {" +
+                    "text: '" + getLanguageStringbyIdStr("SaveChangesButton") + "', " +
+                    "id: 'OkButton1', " +
+                    "click: function() { setNewVehicleNames(); }" +
+                "}," +
+                "'CancelButton': {" +
+                    "text: '" + getLanguageStringbyIdStr("CloseButton") + "', " +
+                    "id: 'CancelButton1', " +
+                    "click: function() { $( this ).dialog( 'close' ); }" +
+                "}" +
+            "}" +
+        "});" );
+
+        $( '#VehiclesDialogTablePanel_dialog' ).parent().attr('id', 'VehiclesDialog');
+        $( '#VehiclesDialogTablePanel_dialog' ).parent().children(".ui-dialog-buttonpane").attr('qft-id', 'changeButtonPanel');
+
+        $( '#NewButton1' ).attr('qft-id', 'NewButton');
+        $( '#ChangeButton1' ).attr('qft-id', 'ChangeButton');
+        $( '#DeleteButton1' ).attr('qft-id', 'DeleteButton');
+        $( '#OkButton1' ).attr('qft-id', 'OkButton');
+        $( '#CancelButton1' ).attr('qft-id', 'CancelButton');
+
+            eval("$( '#VehicleDialogEditPanelCreateNewVehicle' ).dialog({" +
+                "autoOpen: false," +
+                "resizable: true," +
+                "width: \"300px\"," +
+                "modal: true," +
+                "buttons: {" +
+                    "'OkButton' : {" +
+                        "text: '" + getLanguageStringbyIdStr("VehicleDialogEditPanelEditCarPanelVehicleButtonOK") + "', " +
+                        "id: 'OkButton2', " +
+                        "click: function() { createNewVehiclePanelCreateNew(); }" +
+                    "}," +
+                    "'CancelButton' : {" +
+                        "text: '" + getLanguageStringbyIdStr("VehicleDialogEditPanelEditCarPanelVehicleButtonCancel") + "', " +
+                        "id: 'CancelButton2', " +
+                        "click: function() { $( this ).dialog( 'close' ); }" +
+                    "}" +
+                "}" +
+            "});" );
+            eval("$( '#VehicleDialogEditPanelEditVehicle' ).dialog({" +
+                "autoOpen: false," +
+                "resizable: true," +
+                "width: \"300px\"," +
+                "modal: true," +
+                "buttons: {" +
+                    "'OkButton' : {" +
+                        "text: '" + getLanguageStringbyIdStr("VehicleDialogEditPanelEditCarPanelVehicleButtonOK") + "', " +
+                        "id: 'OkButton3', " +
+                        "click: function() { EditVehiclePanelEdit(); }" +
+                    "}," +
+                    "'CancelButton' : {" +
+                        "text: '" + getLanguageStringbyIdStr("VehicleDialogEditPanelEditCarPanelVehicleButtonCancel") + "', " +
+                        "id: 'CancelButton3', " +
+                        "click: function() { $( this ).dialog( 'close' ); }" +
+                    "}" +
+                "}" +
+            "});" );
+        // Special Dialog Edit Panel
+        eval("$( '#SpecialsTablePanel_dialog' ).dialog({" +
+            "autoOpen: false," +
+            "resizable: true," +
+            "height: 900," +
+            "width: 800," +
+            "modal: true," +
+            "open: function() { initSpecialsDialogEditPanelViewModels(true); }," +
+            "buttons: {" +
+                "'NewButton': {" +
+                    "text: '" + getLanguageStringbyIdStr("ButtonNew") + "', " +
+                    "id: 'NewButton1', " +
+                    "click: function() { newSpecial() }" +
+                "}," +
+                "'ChangeButton': {" +
+                    "text: '" + getLanguageStringbyIdStr("ButtonEdit") + "', " +
+                    "id: 'ChangeButton1', " +
+                    "click: function() { editSpecial() }" +
+                "}," +
+                "'DeleteButton': {" +
+                    "text: '" + getLanguageStringbyIdStr("ButtonDelete") + "', " +
+                    "id: 'DeleteButton1', " +
+                    "click: function() { deleteSpecial() }" +
+                "}," +
+                "'DetailsButton': {" +
+                    "text: 'Details', " +
+                    "id: 'DetailsButton1', " +
+                    "click: function() { openSpecialDetails() }" +
+                "}," +
+                "'OkButton': {" +
+                    "text: '" + getLanguageStringbyIdStr("SaveChangesButton") + "', " +
+                    "id: 'OkButton4', " +
+                    "click: function() { SpecialsDialogEditPanelSaveChangesButtonClick(); }" +
+                "}," +
+                "'CancelButton' : {" +
+                    "text: '" + getLanguageStringbyIdStr("CloseButton") + "', " +
+                    "id: 'CancelButton4', " +
+                    "click: function() { $( this ).dialog( 'close' ); }" +
+                "}" +
+            "}" +
+        "});" );
+
+        $( '#NewButton1' ).attr('qft-id', 'NewButton');
+        $( '#ChangeButton1' ).attr('qft-id', 'ChangeButton');
+        $( '#DeleteButton1' ).attr('qft-id', 'DeleteButton');
+        $( '#OkButton4' ).attr('qft-id', 'OkButton');
+        $( '#CancelButton4' ).attr('qft-id', 'CancelButton');
+        $( '#DetailsButton1' ).attr('qft-id', 'DetailsButton');
+
+
+      $( '#SpecialsTablePanel_dialog' ).parent().attr('id', 'SpecialsDialog');
+      $( '#SpecialsTablePanel_dialog' ).parent().children(".ui-dialog-buttonpane").attr('qft-id', 'changeButtonPanel');
+
+            eval("$( '#SpecialModelDialogEditPanelEditSpecialModel' ).dialog({" +
+                "autoOpen: false," +
+                "resizable: true," +
+                "width: \"440px\"," +
+                "modal: true," +
+                "open: function() { initSpecialModelDialogEditPanelEditSpecialModel(true); }," +
+                "buttons: {" +
+                    "'OkButton': {" +
+                        "text: '" + getLanguageStringbyIdStr("VehicleDialogEditPanelEditCarPanelVehicleButtonOK") + "', " +
+                        "id: 'OkButton5', " +
+                        "click: function() { SpecialModelDialogEditPanelEditSpecialModelChangeClick(); }" +
+                    "}," +
+                    "'CancelButton': {" +
+                        "text: '" + getLanguageStringbyIdStr("VehicleDialogEditPanelEditCarPanelVehicleButtonCancel") + "', " +
+                        "id: 'CancelButton5', " +
+                        "click: function() { $( this ).dialog( 'close' ); }" +
+                    "}" +
+                "}" +
+            "});" );
+            eval("$( '#SpecialModelDialogEditPanelTreeDialog' ).dialog({" +
+              "autoOpen: false," +
+                "resizable: true," +
+                "width: \"600\"," +
+                "height: \"300\"," +
+                "modal: true," +
+                "open: function() { initSpecialModelDialogEditPanelTreeDialog(\"hidden\", \"hidden\"); }," +
+                "buttons: {" +
+                    "'OkButton': {" +
+                        "text: '" + getLanguageStringbyIdStr("VehicleDialogEditPanelEditCarPanelVehicleButtonOK") + "', " +
+                        "id: 'OkButton90', " +
+                        "click: function() { $( this ).dialog( 'close' ); }" +
+                    "}" +
+                "}" +
+            "});");
+
+        // Edit Accessory Panel
+        eval("$( '#AccessoryDialogTablePanel_dialog' ).dialog({" +
+            "autoOpen: false," +
+            "resizable: true," +
+            "height: 750," +
+            "width: 600," +
+            "modal: true," +
+            "open: function () { initAccessoryDialogEditPanel(true); }," +
+            "buttons: {" +
+                "'NewButton': {" +
+                    "text: '" + getLanguageStringbyIdStr("ButtonNew") + "', " +
+                    "id: 'NewButton1', " +
+                    "click: function() { newAccessory(); }" +
+                "}," +
+                "'ChangeButton': {" +
+                    "text: '" + getLanguageStringbyIdStr("ButtonEdit") + "', " +
+                    "id: 'ChangeButton1', " +
+                    "click: function() { editAccessory(); }" +
+                "}," +
+                "'DeleteButton': {" +
+                    "text: '" + getLanguageStringbyIdStr("ButtonDelete") + "', " +
+                    "id: 'DeleteButton1', " +
+                    "click: function() { deleteAccessory() }" +
+                "}," +
+                "'OkButton': {" +
+                    "text: '" + getLanguageStringbyIdStr("SaveChangesButton") + "', " +
+                    "id: 'OkButton6', " +
+                    "click: function() { EditAccessoryPanelEdit(); }" +
+                "}," +
+                "'CancelButton': {" +
+                    "text: '" + getLanguageStringbyIdStr("CloseButton") + "', " +
+                    "id: 'CancelButton6', " +
+                    "click: function() { $( this ).dialog( 'close' ); }" +
+                "}" +
+            "}" +
+        "});" );
+
+         $( '#AccessoryDialogTablePanel_dialog' ).parent().attr('id', 'AccessoryDialog');
+         $( '#AccessoryDialogTablePanel_dialog' ).parent().children(".ui-dialog-buttonpane").attr('qft-id', 'changeButtonPanel');
+
+        $( '#NewButton1' ).attr('qft-id', 'NewButton');
+        $( '#ChangeButton1' ).attr('qft-id', 'ChangeButton');
+        $( '#DeleteButton1' ).attr('qft-id', 'DeleteButton');
+        $( '#OkButton6' ).attr('qft-id', 'OkButton');
+        $( '#CancelButton6' ).attr('qft-id', 'CancelButton');
+        $( '#DetailsButton1' ).attr('qft-id', 'DetailsButton');
+
+            eval("$( '#AccessoryDialogEditPanelCreateNewAccessory' ).dialog({" +
+                "autoOpen: false," +
+                "resizable: true," +
+                "width: \"300px\"," +
+                "modal: true," +
+                "open: function() {" +
+                    "document.getElementById('AccessoryDialogEditPanel_CreateAccessoryNameOut').value = '';" +
+                    "document.getElementById('AccessoryDialogEditPanel_CreateAccessoryIDOut').value = '';" +
+                    "document.getElementById('AccessoryDialogEditPanel_CreateAccessoryPricesOut').value = '';" +
+                "}," +
+                "buttons: {" +
+                    "'OkButton': {" +
+                        "text: '" + getLanguageStringbyIdStr("VehicleDialogEditPanelEditCarPanelVehicleButtonOK") + "', " +
+                        "id: 'OkButton7', " +
+                        "click: function() { createNew_Accessory_PanelCreateNew(); }" +
+                    "}," +
+                    "'CancelButton': {" +
+                        "text: '" + getLanguageStringbyIdStr("VehicleDialogEditPanelEditCarPanelVehicleButtonCancel") + "', " +
+                        "id: 'CancelButton7', " +
+                        "click: function() { $( this ).dialog( 'close' ); }" +
+                    "}" +
+                "}" +
+            "});" );
+            eval("$( '#AccessoryDialogEditPanelEditAccessory' ).dialog({" +
+                "autoOpen: false," +
+                "resizable: true," +
+                "width: \"300px\"," +
+                "modal: true," +
+                "buttons: {" +
+                    "'OkButton': {" +
+                        "text: '" + getLanguageStringbyIdStr("VehicleDialogEditPanelEditCarPanelVehicleButtonOK") + "', " +
+                        "id: 'OkButton8', " +
+                        "click: function() { Edit_Accessory_PanelEdit(); }" +
+                    "}," +
+                    "'CancelButton' : {" +
+                        "text: '" + getLanguageStringbyIdStr("VehicleDialogEditPanelEditCarPanelVehicleButtonCancel") + "', " +
+                        "id: 'CancelButton8', " +
+                        "click: function() { $( this ).dialog( 'close' ); }" +
+                    "}" +
+                "}" +
+            "});" );
+        // Send Purchase Order Dialog
+        eval("$( '#ViewPurchaseOrderPanel' ).dialog({" +
+            "autoOpen: false," +
+            "resizable: true," +
+            "height: 400," +
+            "width: 600," +
+            "modal: true," +
+            "open: function() { initViewPurchaseOrderDialog(); }," +
+            "buttons: {" +
+                "'OkButton': {" +
+                    "text: '" + getLanguageStringbyIdStr("VehicleDialogEditPanelEditCarPanelVehicleButtonOK") + "', " +
+                    "id: 'OKButton91', " +
+                    "click: function() { $( this ).dialog( 'close' ); }" +
+                "}" +
+            "}" +
+        "});" );
+
+       $( '#ViewPurchaseOrderPanel' ).parent().attr('id', 'ViewPurchaseOrderDialog' );
+
+        eval("$( '#SendPurchaseOrderPanel' ).dialog({" +
+            "autoOpen: false," +
+            "resizable: true," +
+            "height: 600," +
+            "width: 600," +
+            "modal: true," +
+            "open: function() { " +
+                "$(\"#accordion\").accordion({" +
+                "header: \"h4\"," +
+                "autoHeight: false" +
+                "}); " +
+                "initSendPurchaseOrderDialog(); " +
+            "}," +
+            "buttons: {" +
+                "'OkButton': {" +
+                    "text: '" + getLanguageStringbyIdStr("OrderButton") + "', " +
+                    "id: 'SendOrderButton', " +
+                    "click: function() { order_the_car(); }" +
+                "}," +
+                "'CancelButton': {" +
+                    "text: '" + getLanguageStringbyIdStr("CloseButton") + "', " +
+                    "id: 'CancelButton9', " +
+                    "click: function() { $( this ).dialog( 'close' ); }" +
+                "}" +
+            "}" +
+        "});" );
+
+       $( '#SendPurchaseOrderPanel' ).parent().attr('id', 'SendPurchaseOrderDialog' );
+
+         // Info Dialogs
+        $( '#InfoPanel' ).dialog({
+            autoOpen: false,
+            resizable: false,
+            height: 400,
+            width: "500px",
+            modal: true,
+            buttons: {
+                "btnOk": {
+                    text: "OK",
+                    id: "buttonOK92",
+                    click: function() { $( this ).dialog( "close" ); }
+                }
+            }
+        });
+
+         // Error Dialogs
+        $( '#IlligalInputError' ).dialog({
+            autoOpen: false,
+            resizable: false,
+            height: 300,
+            width: 600,
+            modal: true,
+            buttons: {
+                "btnOk": {
+                    text: "OK",
+                    id: "btnOk93",
+                    click: function() { $( this ).dialog( "close" ); }
+                }
+            }
+        });
+        // Dialogs
+        $( '#IlligalInput' ).dialog({
+            autoOpen: false,
+            resizable: false,
+            height: 300,
+            width: 600,
+            modal: true,
+            buttons: {
+                "btnOk": {
+                    text: "OK",
+                    id: "btnOk94",
+                    click: function() { $( this ).dialog( "close" ); }
+                }
+            }
+        });
+        $( '#ClosingErrorDialog' ).dialog({
+            autoOpen: false,
+            resizable: false,
+            height: 300,
+            width: 600,
+            modal: true,
+            buttons: {
+                "btnOk": {
+                    text: "OK",
+                    id: "btnOk95",
+                    click: function() { $( this ).dialog( "close" ); }
+                }
+            }
+        });
+         // Tabs
+        $('#TabbedPane').tabs();
+        // set tab to the right tabindex
+        var uristring = decodeURI(window.location.search.toUpperCase());
+        if(uristring.indexOf("&TAB=") != -1 || uristring.indexOf("?TAB=") != -1) {
+            var tabindex = 0;
+            tabindex = parseInt(uristring.substr(uristring.indexOf("&TAB=") + uristring.indexOf("?TAB=") + 6, 1));
+            $('#TabbedPane').tabs("select", tabindex);
+        }
+      });
+    // -->
+  </script>
+  <!-- }}} -->
+ </head>
+ <!-- }}} -->
+ <!-- visible area-->
+ <body id="CarConfigWeb" style="height: 100%" onload="javascript: showOrderMenu();">
+    <!-- {{{ JavaScript deactivated? -->
+    <noscript>
+        <font style="color: red; font-size: 30px;">--- Error! Fehler! Car Config Web uses a lot of JavaScript JavaScript! Car Config Web benutzt viel Java Script! ---<br/></font>
+        <font style="color: red; font-size: 30px;">--- Your JavaScript is switched off! Ihr JavaScript ist ausgeschaltet! ---<br/></font>
+        <font style="color: red; font-size: 30px;">--- Please turn on JavaScript! Bitte JavaScript aktivieren! ---</font>
+    </noscript>
+    <!-- }}} -->
+  <!-- Popup Prompt dialogs used in this page! -->
+  <!-- {{{ Dialog Contents of this Page, like Order/Edit-Dialogs, Info-/Error-Messages; each content contains a div followed by a script area; mostly the script area is more important -->
+  <!-- {{{ VehiclesDialogTablePanel and subwindows -->
+  <div id="VehiclesDialogTablePanel_dialog" title="">
+  <div id="VehiclesDialogTablePanel" class="panel">
+    <font id="VehicleDialogEditPanelTabelDescription"></font>
+    <table class="dataTable" id="VehiclesTable">
+    </table>
+    <br/>
+    <hr/>
+   </div>
+   <div class="panel" id="VehicleEditPanel">
+    <table style="margin: 5px; padding: 5px;">
+        <tr>
+            <td><span id="VehicleNameLabel" class="label">Name:</span></td>
+            <td><span><span id="VehicleIdLabel" class="label maybeVisible" style="width: 20px; visibility: hidden">Id:</span></span></td>
+            <td style="text-overflow: ellipsis; white-space: nowrap; overflow: hidden; width: 99999px;"></td>
+            <td><span id="VehiclePriceLabel" class="label">Price:</span></td>
+        </tr>
+        <tr>
+            <td id="VehicleName" class="editable"><input id="VehicleName_input" type="text"/></td>
+            <td><span id="VehicleId" class="editable maybeVisible" style="visibility: hidden;width:20px"><input id="VehicleId_input" type="text"/></span></td>
+            <td></td>
+            <td id="VehiclePrice" class="editable"><input id="VehiclePrice_input" type="text"/></td>
+        </tr>
+    </table>
+    </div>
+    <!--<br/>
+    <hr/>
+    <button id="VehicleDialogEditPanelCreateVehicle" type="button" style="float: right;" onClick="javascript: createNewVehicle();"></button>-->
+  </div>
+  <script type="text/javascript">
+    // <!--
+      // descriptions in the VehiclesDialogTablePanel
+      if(newVersion) {
+        document.getElementById('VehiclesTable').setAttribute('id', 'NewVehiclesTable');
+        document.getElementById('VehicleIdLabel').style.visibility = "visible";
+        document.getElementById('VehicleId').style.visibility = "visible";
+        document.getElementById('VehicleId_input').style.visibility = "visible";
+      }
+      document.getElementById('VehiclesDialogTablePanel_dialog').title = getLanguageStringbyIdStr("SettingsChangeVehicle");
+      document.getElementById('VehicleDialogEditPanelTabelDescription').innerHTML = getLanguageStringbyIdStr("VehicleDialogEditPanelTabelDescription");
+      //document.getElementById('VehicleDialogEditPanelCreateVehicle').innerHTML = getLanguageStringbyIdStr("VehicleDialogEditPanelCreateVehicle");
+        document.getElementById('VehicleNameLabel').innerHTML = getLanguageStringbyIdStr("VehicleDialogEditPanelEditCarPanelVehicleName");
+        document.getElementById('VehicleIdLabel').innerHTML = getLanguageStringbyIdStr("VehicleDialogEditPanelEditCarPanelVehicleID");
+        document.getElementById('VehiclePriceLabel').innerHTML = getLanguageStringbyIdStr("VehicleDialogEditPanelEditCarPanelVehiclePrice");
+      var dummyvehicleNames, dummyvehicleID, dummyvehicle_price, dummyselectedvehicle, initVehicleDoalogEditPanelUpdateTable;
+
+      function initVehicleDialogEditPanel(initVars) {
+        // init dummy vars
+        if(initVars) {
+            dummyvehicleNames = cloneArray(vehicleNames);
+            dummyvehicleID = cloneArray(vehicleID);
+            dummyvehicle_price = cloneArray(vehicle_price);
+            dummyselectedvehicle = cloneArray(selectedvehicle);
+            initVehicleDoalogEditPanelUpdateTableSelectedRow = -1;
+        }
+        initVehicleDoalogEditPanelUpdateTable();
+      }
+
+      function initVehicleDoalogEditPanelUpdateTable() {
+        // init tabel
+         // delete all elements
+         var tblElement = (newVersion)?document.getElementById('NewVehiclesTable'):document.getElementById('VehiclesTable');
+         while(tblElement.childNodes.length != 0)
+            tblElement.removeChild(tblElement.firstChild);
+         // insert
+         var row = 0;
+         var tr = tblElement.insertRow(row++);
+         tr.className += " dataRow";
+         tr.className += " headerRow";
+         var td_1 = document.createElement("td");       // td for Vehicle Name
+         var td_2 = document.createElement("td");       // td for ID
+         var td_3 = document.createElement("td");       // td for price
+         var td_4 = document.createElement("td");       // td for edit
+         td_1.className += " dataCell";
+         td_2.className += " dataCell";
+         td_3.className += " dataCell";
+         td_4.className += " dataCell";
+         td_1.className += " headerCell";
+         td_2.className += " headerCell";
+         td_3.className += " headerCell";
+         td_4.className += " headerCell";
+         td_1.appendChild(document.createTextNode(" " + getLanguageStringbyIdStr("VehicleDialogEditPanelTableHeaderName") + " "));
+         td_2.appendChild(document.createTextNode(" " + getLanguageStringbyIdStr("VehicleDialogEditPanelTableHeaderID") + " "));
+         td_3.appendChild(document.createTextNode(" " + getLanguageStringbyIdStr("VehicleDialogEditPanelTableHeaderPrices") + " "));
+         td_4.appendChild(document.createTextNode(" " + getLanguageStringbyIdStr("VehicleDialogEditPanelTableHeaderEdit") + " "));
+         td_1.style.width = "200px";
+         td_2.style.width = "50px";
+         td_3.style.width = "100px";
+         td_4.style.width = "150px";
+         // ID
+           //td_1.setAttribute('id', 'VehicleDialogEditPanelTableName');
+           //td_2.setAttribute('id', 'VehicleDialogEditPanelTableId');
+           //td_3.setAttribute('id', 'VehicleDialogEditPanelTablePrice');
+         // ID END
+         tr.appendChild(td_1);
+         if(newVersion) tr.appendChild(td_2);
+         tr.appendChild(td_3);
+         tr.appendChild(td_4);
+         tr.style.backgroundColor = "#D0D0D0";
+        document.getElementById("VehicleName_input").value = "";//dummyvehicleNames[i];
+        document.getElementById("VehicleId_input").value = "";//dummyvehicleID[i];
+        document.getElementById("VehiclePrice_input").value = "";//dummyvehicle_price[i];
+         for(var i = 0; i < dummyvehicleNames.length; i++) {
+            var tr = tblElement.insertRow(row++);
+            tr.className += " dataRow";
+            tr.onclick = function() {
+                var i = 0;
+                for(var node = this.parentNode.firstChild; node != this; node = node.nextSibling) ++i;
+                initVehicleDoalogEditPanelUpdateTableSelectedRow = i;
+                initVehicleDoalogEditPanelUpdateTable();
+            }
+            var td_1 = document.createElement("td");       // td for Vehicle Name
+            var td_2 = document.createElement("td");       // td for ID
+            var td_3 = document.createElement("td");       // td for price
+            var td_4 = document.createElement("td");       // td for edit
+            td_1.className += " dataCell";
+            td_2.className += " dataCell";
+            td_3.className += " dataCell";
+            td_4.className += " dataCell";
+            td_1.appendChild(document.createTextNode(" " + dummyvehicleNames[i] + " "));
+            td_2.appendChild(document.createTextNode(" " + dummyvehicleID[i] + " "));
+            td_3.appendChild(document.createTextNode(" " + round(dummyvehicle_price[i]) + " \u20AC"));
+            // ID
+              //td_1.setAttribute('id', 'VehicleDialogEditPanelTableName' + dummyvehicleNames[i].replace(/\s/, ""));
+              //td_2.setAttribute('id', 'VehicleDialogEditPanelTableId' + dummyvehicleNames[i].replace(/\s/, ""));
+              //td_3.setAttribute('id', 'VehicleDialogEditPanelTablePrice' + dummyvehicleNames[i].replace(/\s/, ""));
+            // ID END
+            var tr_4Link1 = document.createElement("a");
+            var tr_4Link2 = document.createElement("a");
+            tr_4Link1.appendChild(document.createTextNode( getLanguageStringbyIdStr("VehicleDialogEditPanelTableDel") ));
+            tr_4Link2.appendChild(document.createTextNode( getLanguageStringbyIdStr("VehicleDialogEditPanelTableEdit") ));
+            tr_4Link1.href = "#";
+            tr_4Link2.href = "#";
+            tr_4Link1.onclick = function() {
+                if(confirm(getLanguageStringbyIdStr("VehicleDialogEditPanelDelQuestion"))) {
+                    // get the selected id
+                    var id = 0;
+                    // .parentNode.parentNode.parentNode ist the table (tr and td)
+                    for(var node = this.parentNode.parentNode.parentNode.firstChild; node != this.parentNode.parentNode; node = node.nextSibling) ++id;
+                    if(id == dummyselectedvehicle) {
+                        dummyselectedvehicle = 0;
+                    } else if(id < dummyselectedvehicle) {
+                        dummyselectedvehicle--;
+                    }
+                    dummyvehicleNames = deleteElement(dummyvehicleNames, id - 1);       // - 1 because of the tables header
+                    dummyvehicleID = deleteElement(dummyvehicleID, id - 1);
+                    dummyvehicle_price = deleteElement(dummyvehicle_price, id - 1);
+                    // re-init the table
+                    initVehicleDialogEditPanel(false);
+                }
+            };
+            tr_4Link2.onclick = function() {
+                // look for the index of the Array that has to be edit
+                var id = -1;
+                for(var node = this.parentNode.parentNode.parentNode.firstChild; node != this.parentNode.parentNode; node = node.nextSibling) ++id;
+                // Edit the table
+                if(newVersion) {
+                    document.getElementById("VehicleDialogEditPanelEditVehicleID").innerHTML = getLanguageStringbyIdStr("VehicleDialogEditPanelEditCarPanelVehicleID");
+                    document.getElementById("VehicleDialogEditPanelVehicleID_input").style.display = "block";
+                } else {
+                    document.getElementById("VehicleDialogEditPanelEditVehicleID").innerHTML = "";
+                    document.getElementById("VehicleDialogEditPanelVehicleID_input").style.display = "none";
+                }
+                document.getElementById("VehicleDialogEditPanelIDID").value = id;
+                document.getElementById("VehicleDialogEditPanelVehicleName_input").value = dummyvehicleNames[id];
+                document.getElementById("VehicleDialogEditPanelVehicleID_input").value = dummyvehicleID[id];
+                document.getElementById("VehicleDialogEditPanelVehiclePrice_input").value = dummyvehicle_price[id];
+                // Open the Dialog
+                $(function() {
+                    $( '#VehicleDialogEditPanelEditVehicle' ).dialog( 'open' );
+                });
+            };
+            td_4.appendChild(tr_4Link1);
+            td_4.appendChild(document.createTextNode(" "));
+            td_4.appendChild(tr_4Link2);
+            td_1.style.width = "200px";
+            td_2.style.width = "50px";
+            td_3.style.width = "100px";
+            td_4.style.width = "180px";
+            td_1.style.textAlign = "left";
+            td_2.style.textAlign = "left";
+            td_3.style.textAlign = "right";
+            td_4.style.textAlign = "right";
+            tr.appendChild(td_1);
+            if(newVersion) tr.appendChild(td_2);
+            tr.appendChild(td_3);
+            tr.appendChild(td_4);
+            if (i + 1 == initVehicleDoalogEditPanelUpdateTableSelectedRow)
+                tr.style.backgroundColor = "#00BFFF";
+                if(0 < initVehicleDoalogEditPanelUpdateTableSelectedRow && initVehicleDoalogEditPanelUpdateTableSelectedRow <= dummyvehicleNames.length) {
+                    document.getElementById("VehicleName_input").value = dummyvehicleNames[initVehicleDoalogEditPanelUpdateTableSelectedRow - 1];
+                    document.getElementById("VehicleId_input").value = dummyvehicleID[initVehicleDoalogEditPanelUpdateTableSelectedRow - 1];
+                    document.getElementById("VehiclePrice_input").value = dummyvehicle_price[initVehicleDoalogEditPanelUpdateTableSelectedRow - 1];
+                }
+            else if((i + 1) % 2 == 0)
+                tr.style.backgroundColor = "#e6e6e6";
+            else
+                tr.style.backgroundColor = "#f2f2f2";
+         }
+      }
+
+      function createNewVehicle() {
+        var name = document.getElementById("VehicleName_input").value;
+        var id = document.getElementById("VehicleId_input").value;
+        var price = document.getElementById("VehiclePrice_input").value;
+        if(name.length < 1 || (id.length < 1 && newVersion) || !isNr(price)) {
+            $(function() {
+                $( '#IlligalInputError' ).dialog( 'open' );
+            });
+            return;
+        }
+        dummyvehicleNames.push(name);
+        if(newVersion)
+            dummyvehicleID.push(id);
+        else
+            dummyvehicleID.push("M" + (dummyvehicleID.length + 1));
+        dummyvehicle_price.push(parseFloat(price));
+        $(function() {
+            $( '#VehicleDialogEditPanelCreateNewVehicle' ).dialog( 'close' );
+        });
+        initVehicleDialogEditPanel(false);
+      }
+
+      function deleteVehicle() {
+        if(initVehicleDoalogEditPanelUpdateTableSelectedRow >= 1 && initVehicleDoalogEditPanelUpdateTableSelectedRow <= dummyvehicleNames.length) {
+            if(confirm(getLanguageStringbyIdStr("VehicleDialogEditPanelDelQuestion"))) {
+                var id = initVehicleDoalogEditPanelUpdateTableSelectedRow;
+                if(id == dummyselectedvehicle) {
+                    dummyselectedvehicle = 0;
+                } else if(id < dummyselectedvehicle) {
+                    dummyselectedvehicle--;
+                }
+                dummyvehicleNames = deleteElement(dummyvehicleNames, id - 1);       // - 1 because of the tables header
+                dummyvehicleID = deleteElement(dummyvehicleID, id - 1);
+                dummyvehicle_price = deleteElement(dummyvehicle_price, id - 1);
+                // re-init the table
+                initVehicleDoalogEditPanelUpdateTableSelectedRow = -1;
+                initVehicleDialogEditPanel(false);
+            }
+        }
+      }
+      function editVehicle() {
+        if(initVehicleDoalogEditPanelUpdateTableSelectedRow >= 1 && initVehicleDoalogEditPanelUpdateTableSelectedRow <= dummyvehicleNames.length) {
+            var vehicleInternId = initVehicleDoalogEditPanelUpdateTableSelectedRow - 1;
+            var name = document.getElementById("VehicleName_input").value;
+            var id = document.getElementById("VehicleId_input").value;
+            var price = document.getElementById("VehiclePrice_input").value;
+            if(name.length < 1 || (id.length < 1 && Version) || !isNr(price)) {
+                $(function() {
+                    $( '#IlligalInputError' ).dialog( 'open' );
+                });
+                return;
+            }
+            dummyvehicleNames[vehicleInternId] = name;
+            if(newVersion) {
+                dummyvehicleID[vehicleInternId] = id;
+            } else {
+                dummyvehicleID[vehicleInternId] = "M" + (dummyvehicleID.length + 1);
+            }
+            dummyvehicle_price[vehicleInternId] = parseFloat(price);
+            initVehicleDialogEditPanel(false);
+        }
+      }
+
+      function setNewVehicleNames() {
+        if(!loadTestVersion) {
+            vehicleNames = dummyvehicleNames;
+            vehicleID = dummyvehicleID;
+            vehicle_price = dummyvehicle_price;
+            selectedvehicle = dummyselectedvehicle;
+            updateAllPanels();
+            $(function() {
+                $( '#VehiclesDialogTablePanel_dialog' ).dialog( 'close' );
+            });
+        } else {
+            window.setTimeout("setNewVehicleNamesLoadTest();", Math.random() * 1000 + 500);
+        }
+      }
+
+      function setNewVehicleNamesLoadTest() {
+        vehicleNames = dummyvehicleNames;
+        vehicleID = dummyvehicleID;
+        vehicle_price = dummyvehicle_price;
+        selectedvehicle = dummyselectedvehicle;
+        updateAllPanels();
+        $(function() {
+            $( '#VehiclesDialogTablePanel_dialog' ).dialog( 'close' );
+        });
+      }
+
+    // -->
+  </script>
+  <div id="VehicleDialogEditPanelCreateNewVehicle" title="">
+  <center>
+   <table class="dataTable">
+    <tr class="dataRow">
+     <td class="dataCell label" id="VehicleDialogEditPanelCreateNewVehicleName"></td>
+     <td class="dataCell label" id="VehicleDialogEditPanelCreateNewVehicleID"></td>
+     <td class="dataCell label" id="VehicleDialogEditPanelCreateNewVehiclePrices"></td>
+    </tr>
+    <tr class="dataRow">
+     <td class="dataCell editable"><input type="text" id="VehicleDialogEditPanelNewVehicleName" value="" size="10"></td>
+     <td class="dataCell editable"><input type="text" id="VehicleDialogEditPanelNewVehicleID" value="" size="3"></td>
+     <td class="dataCell editable"><input type="text" id="VehicleDialogEditPanelNewVehiclePrice" value="" size="7"></td>
+    </tr>
+   </table>
+  </center>
+  </div>
+  <script type="text/javascript">
+    // <!--
+        document.getElementById('VehicleDialogEditPanelCreateNewVehicle').title = getLanguageStringbyIdStr("VehicleDialogEditPanelCreateNewCarPanelTitle");
+        document.getElementById('VehicleDialogEditPanelCreateNewVehicleName').innerHTML = getLanguageStringbyIdStr("VehicleDialogEditPanelEditCarPanelVehicleName");
+        document.getElementById('VehicleDialogEditPanelCreateNewVehicleID').innerHTML = getLanguageStringbyIdStr("VehicleDialogEditPanelEditCarPanelVehicleID");
+        document.getElementById('VehicleDialogEditPanelCreateNewVehiclePrices').innerHTML = getLanguageStringbyIdStr("VehicleDialogEditPanelEditCarPanelVehiclePrice");
+
+        function createNewVehiclePanelCreateNew() {
+            var name = document.getElementById("VehicleDialogEditPanelNewVehicleName").value;
+            var id = document.getElementById("VehicleDialogEditPanelNewVehicleID").value;
+            var price = document.getElementById("VehicleDialogEditPanelNewVehiclePrice").value;
+            if(name.length < 1 || (id.length < 1 && newVersion) || !isNr(price)) {
+                $(function() {
+                    $( '#IlligalInputError' ).dialog( 'open' );
+                });
+                return;
+            }
+            dummyvehicleNames.push(name);
+            if(newVersion)
+                dummyvehicleID.push(id);
+            else
+                dummyvehicleID.push("M" + (dummyvehicleID.length + 1));
+            dummyvehicle_price.push(parseFloat(price));
+            $(function() {
+                $( '#VehicleDialogEditPanelCreateNewVehicle' ).dialog( 'close' );
+            });
+            initVehicleDialogEditPanel(false);
+        }
+    // -->
+  </script>
+  <div id="VehicleDialogEditPanelEditVehicle" title="">
+  <center>
+   <table>
+    <tr>
+     <td class="label" id="VehicleDialogEditPanelEditVehicleName"></td>
+     <td class="label" id="VehicleDialogEditPanelEditVehicleID"></td>
+     <td class="label" id="VehicleDialogEditPanelEditVehiclePrices"></td>
+    </tr>
+    <tr>
+     <td class="editable" id="VehicleDialogEditPanelVehicleName"><input type="text" id="VehicleDialogEditPanelVehicleName_input" value="" size="10"></td>
+     <td class="editable" id="VehicleDialogEditPanelVehicleID"><input type="text" id="VehicleDialogEditPanelVehicleID_input" value="" size="3"></td>
+     <td class="editable" id="VehicleDialogEditPanelVehiclePrice"><input type="text" id="VehicleDialogEditPanelVehiclePrice_input" value="" size="7"></td>
+    </tr>
+   </table>
+   <input type="hidden" id="VehicleDialogEditPanelIDID" value="">
+  </center>
+  </div>
+  <script type="text/javascript">
+    // <!--
+        document.getElementById('VehicleDialogEditPanelEditVehicle').title = getLanguageStringbyIdStr("VehicleDialogEditPanelEditCarPanelTitle");
+        document.getElementById('VehicleDialogEditPanelEditVehicleName').innerHTML = getLanguageStringbyIdStr("VehicleDialogEditPanelEditCarPanelVehicleName");
+        document.getElementById('VehicleDialogEditPanelEditVehicleID').innerHTML = getLanguageStringbyIdStr("VehicleDialogEditPanelEditCarPanelVehicleID");
+        document.getElementById('VehicleDialogEditPanelEditVehiclePrices').innerHTML = getLanguageStringbyIdStr("VehicleDialogEditPanelEditCarPanelVehiclePrice");
+
+        function EditVehiclePanelEdit() {
+            var name = document.getElementById("VehicleDialogEditPanelVehicleName_input").value;
+            var id = document.getElementById("VehicleDialogEditPanelVehicleID_input").value;
+            var price = document.getElementById("VehicleDialogEditPanelVehiclePrice_input").value;
+            if(name.length < 1 || (id.length < 1 && Version) || !isNr(price)) {
+                $(function() {
+                    $( '#IlligalInputError' ).dialog( 'open' );
+                });
+                return;
+            }
+            dummyvehicleNames[document.getElementById('VehicleDialogEditPanelIDID').value] = name;
+            if(newVersion) {
+                dummyvehicleID[document.getElementById('VehicleDialogEditPanelIDID').value] = id;
+            } else {
+                dummyvehicleID[document.getElementById('VehicleDialogEditPanelIDID').value] = "M" + (dummyvehicleID.length + 1);
+            }
+            dummyvehicle_price[document.getElementById('VehicleDialogEditPanelIDID').value] = parseFloat(price);
+            $(function() {
+                $( '#VehicleDialogEditPanelEditVehicle' ).dialog( 'close' );
+            });
+            initVehicleDialogEditPanel(false);
+        }
+    // -->
+  </script>
+  <!-- }}} -->
+
+  <!-- {{{ Special Dialog Edit Panel and subwindows -->
+  <div id="SpecialsTablePanel_dialog" title="">
+    <center>
+     <div class="panel" id="SpecialsTablePanel">
+      <table class="dataTable" id="SpecialsTable" style="width: 505px">
+      </table>
+       </div>
+      <div class="panel" id="SpecialsDialogEditPanel" style="overflow: auto;">
+            <table>
+              <tr>
+                <td class="label" id="SpecialsNameLabel99"></td>
+                <td class="label" id="SpecialsPriceLabel99"></td>
+                <td style="width: 75px;"></td>
+                <td class="label" id="SpecialsSeparatePricesLabel99"></td>
+              </tr>
+              <tr>
+                <td class="editable" id="SpecialsName99"><input id="SpecialsName99_input" type="text" size="27"></td>
+                <td class="editable" id="SpecialsPrice99"><input id="SpecialsPrice99_input" type="text" size="10"></td>
+                <td></td>
+                <td class="textfield notEditable" id="SpecialsSeparatePrices99"><input id="SpecialsSeparatePrices99_input" type="text" size="10" readonly></td>
+              </tr>
+             </table>
+       </div>
+             <table>
+              <tr>
+                <td class="label" id="SpecialModelDialogEditPanelEditSpecialModel_Desc99"></td>
+              </tr>
+              <tr>
+                <td><textarea id="SpecialsDialogArea99" style="width: 505px; height: 150px;"></textarea></td>
+              </tr>
+            </table>
+           <div class="panel" id="AccessorySpecialsTablePanel">
+            <table class="dataTable selectable" id="AccessoryTable99">
+            </table>
+           </div>
+        </center>
+    </div>
+   <br/>
+   <!--
+   <hr>
+   <button id="SpecialsDialogEditPanelNewModel" type="button" style="float: right" onClick="javascript: openNewSpecialsDialogEditPanel();"></button>
+   -->
+  </div>
+  <script type="text/javascript">
+    // <!--
+ // <!--
+      document.getElementById('SpecialsTablePanel_dialog').title = getLanguageStringbyIdStr("SettingsChangeSpecials");
+      //document.getElementById('SpecialsDialogEditPanelNewModel').innerHTML = getLanguageStringbyIdStr("SpecialsDialogEditPanelNewModelButton");
+      document.getElementById('SpecialsNameLabel99').innerHTML = getLanguageStringbyIdStr("SpecialModelDialogEditPanelEditSpecialModel_Name");
+      document.getElementById('SpecialsPriceLabel99').innerHTML = getLanguageStringbyIdStr("SpecialModelDialogEditPanelEditSpecialModel_Price");
+      document.getElementById('SpecialsSeparatePricesLabel99').innerHTML = getLanguageStringbyIdStr("SpecialModelDialogEditPanelEditSpecialModel_CPrice");
+      document.getElementById('SpecialModelDialogEditPanelEditSpecialModel_Desc99').innerHTML = getLanguageStringbyIdStr("SpecialModelDialogEditPanelEditSpecialModel_Desc");
+
+      var dummy_vehicle_specialmodel_name, dummy_vehicle_specialmodel_desc, dummy_vehicle_specialmodel_extra, dummy_vehicle_specialmodel_price, dummy_selectedspecial,
+        initSpecialsDialogEditPanelViewModelsTableSelection, dummydummy2selection;
+
+      function initSpecialsDialogEditPanelViewModels(initVars) {
+        // init Vars
+        if(initVars) {
+            dummy_vehicle_specialmodel_name = cloneArray(vehicle_specialmodel_name);
+            dummy_vehicle_specialmodel_desc = cloneArray(vehicle_specialmodel_desc);
+            dummy_vehicle_specialmodel_extra = cloneArray(vehicle_specialmodel_extra);
+            dummy_vehicle_specialmodel_price = cloneArray(vehicle_specialmodel_price);
+            dummy_selectedspecial = cloneArray(selectedspecial);
+            dummydummy2selection = "";
+            initSpecialsDialogEditPanelViewModelsTableSelection = 0;
+        }
+        // get table
+        var tbl = document.getElementById('SpecialsTable');
+        // delete all previous elemtents form table
+        while(tbl.childNodes.length != 0) {
+            tbl.removeChild(tbl.firstChild);
+        }
+        // insert new elements in table
+        // first Header
+        var row = 0;
+        var tr = tbl.insertRow(row++);
+        tr.className += " dataRow";
+        tr.className += " headerRow";
+        var td_1 = document.createElement("td");       // td for Model Name
+        var td_5 = document.createElement("td");       // td for edit
+        td_1.className += " dataCell";
+        td_5.className += " dataCell";
+        td_1.className += " headerCell";
+        td_5.className += " headerCell";
+        td_1.appendChild(document.createTextNode(" " + getLanguageStringbyIdStr("VehicleDialogEditPanelTableHeaderName") + " "));
+        td_5.appendChild(document.createTextNode(" " + getLanguageStringbyIdStr("VehicleDialogEditPanelTableHeaderEdit") + " "));
+        td_1.style.whiteSpace = "nowrap";
+        td_5.style.whiteSpace = "nowrap";
+        tr.appendChild(td_1);
+        tr.appendChild(td_5);
+        tr.style.backgroundColor = "#D0D0D0";
+        document.getElementById("SpecialsName99_input").value = "";
+        document.getElementById("SpecialsPrice99_input").value = "";
+        document.getElementById("SpecialsSeparatePrices99_input").value = "";
+        document.getElementById("SpecialsDialogArea99").value = "";
+        // then the other elements
+        for(var i = 0; i < dummy_vehicle_specialmodel_name.length; i++) {
+            tr = tbl.insertRow(row++);
+            tr.className += " dataRow";
+            tr.onclick = function() {
+                var i = 0;
+                for(var node = this.parentNode.firstChild; node != this; node = node.nextSibling) ++i;
+                initSpecialsDialogEditPanelViewModelsTableSelection = i;
+                initSpecialsDialogEditPanelViewModels(false);
+            }
+            td_1 = document.createElement("td");
+            td_5 = document.createElement("td");
+            td_1.className += " dataCell";
+            td_5.className += " dataCell";
+            td_1.appendChild(document.createTextNode(" " + dummy_vehicle_specialmodel_name[i] + " "));
+                var td_5Link1 = document.createElement("a");
+                var td_5Link2 = document.createElement("a");
+                var td_5Link3 = document.createElement("a");
+                td_5Link1.href = "#";
+                td_5Link2.href = "#";
+                td_5Link3.href = "#";
+                td_5Link1.setAttribute("id", "DeleteButton2");
+                td_5Link2.setAttribute("id", "ChangeButton2");
+                td_5Link3.setAttribute("id", "DetailsButton");
+                td_5Link1.appendChild(document.createTextNode( getLanguageStringbyIdStr("VehicleDialogEditPanelTableDel") ));
+                td_5Link2.appendChild(document.createTextNode( getLanguageStringbyIdStr("VehicleDialogEditPanelTableEdit") ));
+                td_5Link3.appendChild(document.createTextNode( getLanguageStringbyIdStr("SpecialModelEditPanelTableViewDetails") ));
+                if(i != 0) {
+                  td_5Link1.onclick = function() {
+                      if(confirm(getLanguageStringbyIdStr("SpecialModelDialogEditPanelDelQuestion"))) {
+                          var id = -1;
+                          for(var node = this.parentNode.parentNode.parentNode.firstChild; node != this.parentNode.parentNode; node = node.nextSibling) ++id;
+                          if(selectedspecial == id) {
+                              selectedspecial = 0;
+                          } else if(id < selectedspecial) {
+                              selectedspecial--;
+                          }
+                          dummy_vehicle_specialmodel_name = deleteElement(dummy_vehicle_specialmodel_name, id);
+                          dummy_vehicle_specialmodel_desc = deleteElement(dummy_vehicle_specialmodel_desc, id);
+                          dummy_vehicle_specialmodel_extra = deleteElement(dummy_vehicle_specialmodel_extra, id);
+                          dummy_vehicle_specialmodel_price = deleteElement(dummy_vehicle_specialmodel_price, id);
+                          initSpecialsDialogEditPanelViewModelsTableSelection = 0;
+                          initSpecialsDialogEditPanelViewModels(false);
+                      }
+                  };
+                  td_5Link2.onclick = function() {
+                      var id = -1;
+                      for(var node = this.parentNode.parentNode.parentNode.firstChild; node != this.parentNode.parentNode; node = node.nextSibling) ++id;
+                      document.getElementById('SpecialModelDialogEditPanelEditSpecialModelAccessoryHiddenId').value = id;
+                      document.getElementById('SpecialModelDialogEditPanelEditSpecialModel_NameInput').value = dummy_vehicle_specialmodel_name[id];
+                      document.getElementById('SpecialModelDialogEditPanelEditSpecialModel_PriceInput').value = dummy_vehicle_specialmodel_price[id];
+                      var price = 0;
+                      var accesso = dummy_vehicle_specialmodel_extra[id];
+                      for(var z = 0; z < accessory_name.length; z++) {
+                          if(accesso.indexOf('xS' + z + 'x') != -1) {
+                              price += accessory_price[z];
+                          }
+                      }
+                      dummydummyprice = price;
+                      document.getElementById('SpecialModelDialogEditPanelEditSpecialModel_CPriceInput').value = round(price) + " \u20AC";
+                      document.getElementById('SpecialModelDialogEditPanelEditSpecialModel_DescInput').value = dummy_vehicle_specialmodel_desc[id];
+                      $(function() {
+                          $( '#SpecialModelDialogEditPanelEditSpecialModel' ).dialog( 'open' );
+                      });
+                  };
+                } else {
+                  td_5Link1.style.color = "#999999";
+                  td_5Link2.style.color = "#999999";
+                }
+                td_5Link3.onclick = function() {
+                    var id = -1;
+                    for(var node = this.parentNode.parentNode.parentNode.firstChild; node != this.parentNode.parentNode; node = node.nextSibling) ++id;
+                    _SpecialModelDialogEditPanelTreeDialogID = id;
+                    $(function() {
+                        $( '#SpecialModelDialogEditPanelTreeDialog' ).dialog( 'open' );
+                    });
+                };
+            td_5.appendChild(td_5Link1);
+            td_5.appendChild(document.createTextNode(" "));
+            td_5.appendChild(td_5Link2);
+            td_5.appendChild(document.createElement("br"));
+            td_5.appendChild(td_5Link3);
+            td_1.style.whiteSpace = "nowrap";
+            td_5.style.whiteSpace = "nowrap";
+            tr.appendChild(td_1);
+            tr.appendChild(td_5);
+            if(i + 1 == initSpecialsDialogEditPanelViewModelsTableSelection) {
+                tr.style.backgroundColor = "#00BFFF";
+                if(0 < initSpecialsDialogEditPanelViewModelsTableSelection && initSpecialsDialogEditPanelViewModelsTableSelection <= dummy_vehicle_specialmodel_name.length) {
+                    document.getElementById("SpecialsName99_input").value = dummy_vehicle_specialmodel_name[initSpecialsDialogEditPanelViewModelsTableSelection - 1];
+                    document.getElementById("SpecialsPrice99_input").value = dummy_vehicle_specialmodel_price[initSpecialsDialogEditPanelViewModelsTableSelection - 1];
+                    var price = 0;
+                    var accesso = dummy_vehicle_specialmodel_extra[initSpecialsDialogEditPanelViewModelsTableSelection - 1];
+                    for(var z = 0; z < accessory_name.length; z++) {
+                        if(accesso.indexOf('xS' + z + 'x') != -1) {
+                            price += accessory_price[z];
+                        }
+                    }
+                    document.getElementById("SpecialsSeparatePrices99_input").value = price;
+                    document.getElementById("SpecialsDialogArea99").value = dummy_vehicle_specialmodel_desc[initSpecialsDialogEditPanelViewModelsTableSelection - 1];
+                }
+            } else if((i + 1) % 2 == 1)
+                tr.style.backgroundColor = "#e6e6e6";
+            else
+                tr.style.backgroundColor = "#f2f2f2";
+        }
+        var index = initSpecialsDialogEditPanelViewModelsTableSelection - 1;
+        var dummydummy2price = parseInt(document.getElementById("SpecialsSeparatePrices99_input").value);
+        if(isNaN(dummydummy2price)) {
+            dummydummy2price = 0;
+        }
+        dummydummy2selection = (index > 0) ? new String(dummy_vehicle_specialmodel_extra[index]) : "";
+        doSpecAccTable(index, dummydummy2price);
+      }
+
+      function doSpecAccTable(index, dummydummy2price) {
+        tbl = document.getElementById("AccessoryTable99");
+        while(tbl.childNodes.length != 0) {
+            tbl.removeChild(tbl.firstChild);
+        }
+        var row = 0;
+        var tr = tbl.insertRow(row++);
+        tr.className += " dataRow";
+        tr.className += " headerRow";
+        var td_0 = document.createElement("td");
+        var td_1 = document.createElement("td");
+        var td_2 = document.createElement("td");
+        var td_3 = document.createElement("td");
+        td_0.className += " dataCell";
+        td_1.className += " dataCell";
+        td_2.className += " dataCell";
+        td_3.className += " dataCell";
+        td_0.className += " headerCell";
+        td_1.className += " headerCell";
+        td_2.className += " headerCell";
+        td_3.className += " headerCell";
+        td_1.appendChild(document.createTextNode(" " + getLanguageStringbyIdStr("VehicleDialogEditPanelTableHeaderName") + " "));
+        td_2.appendChild(document.createTextNode(" " + getLanguageStringbyIdStr("VehicleDialogEditPanelTableHeaderID") + " "));
+        td_3.appendChild(document.createTextNode(" " + getLanguageStringbyIdStr("VehicleDialogEditPanelTableHeaderPrices") + " "));
+        tr.appendChild(td_0);
+        tr.appendChild(td_1);
+        tr.appendChild(td_2);
+        tr.appendChild(td_3);
+        td_1.style.width = "300px";
+        td_2.style.width = "50px";
+        td_3.style.width = "100px";
+        td_1.style.textAlign = "left";
+        td_2.style.textAlign = "center";
+        td_3.style.textAlign = "right";
+        tr.style.backgroundColor = "#D0D0D0";
+        for(var i = 0; i < accessory_name.length; i++) {
+            tr = tbl.insertRow(row++);
+            tr.className += " dataRow";
+            td_0 = document.createElement("td");
+            td_1 = document.createElement("td");
+            td_2 = document.createElement("td");
+            td_3 = document.createElement("td");
+            td_0.className += " dataCell";
+            td_1.className += " dataCell";
+            td_2.className += " dataCell";
+            td_3.className += " dataCell";
+            td_1.appendChild(document.createTextNode(accessory_name[i]));
+            td_2.appendChild(document.createTextNode(accessory_id[i]));
+            td_3.appendChild(document.createTextNode(round(accessory_price[i]) + " \u20AC"));
+            tr.appendChild(td_0);
+            tr.appendChild(td_1);
+            tr.appendChild(td_2);
+            tr.appendChild(td_3);
+            td_1.style.textAlign = "left";
+            td_2.style.textAlign = "center";
+            td_3.style.textAlign = "right";
+            td_1.style.cursor = "pointer";
+            td_2.style.cursor = "pointer";
+            td_3.style.cursor = "pointer";
+            var uristring = decodeURI(window.location.search.toUpperCase());
+            if(uristring.indexOf("&ROWSELECT=1") != -1 || uristring.indexOf("?ROWSELECT=1") != -1)
+            {
+                tr.onclick = function() {
+                    var id = 0;
+                    for(var node = this.parentNode.firstChild; node.nextSibling != this; node = node.nextSibling) ++id;
+                    if(dummydummy2selection.indexOf("xS" + id + "x") != -1) {
+                        // delete from list
+                        var pos = dummydummy2selection.indexOf("xS" + id + "x");
+                        dummydummy2selection = dummydummy2selection.substr(0, pos) + dummydummy2selection.substr(pos + ("xS" + id + "x").length);
+                        dummydummy2price -= accessory_price[id];
+                    } else {
+                        // insert in list
+                        dummydummy2selection += "xS" + id + "x"
+                        dummydummy2price += accessory_price[id];
+                    }
+                    document.getElementById('SpecialsSeparatePrices99_input').value = dummydummy2price;
+                    doSpecAccTable(index, dummydummy2price);
+                };
+            } else {
+                td_0.onclick = function() {
+                    var id = 0;
+                    var tbl = this.parentNode.parentNode;
+                    for(var node = tbl.firstChild; node.nextSibling != this.parentNode; node = node.nextSibling) ++id;
+                    if(dummydummy2selection.indexOf("xS" + id + "x") != -1) {
+                        // delete from list
+                        var pos = dummydummy2selection.indexOf("xS" + id + "x");
+                        dummydummy2selection = dummydummy2selection.substr(0, pos) + dummydummy2selection.substr(pos + ("xS" + id + "x").length);
+                        dummydummy2price -= accessory_price[id];
+                    } else {
+                        // insert in list
+                        dummydummy2selection += "xS" + id + "x"
+                        dummydummy2price += accessory_price[id];
+                    }
+                    document.getElementById('SpecialsSeparatePrices99_input').value = round(dummydummy2price) + " \u20AC";
+                    doSpecAccTable(index, dummydummy2price);
+                };
+            }
+            if(dummydummy2selection.indexOf("xS" + i + "x") != -1) {
+            //tr.style.backgroundColor = "#33CC55";
+                td_0.innerHTML = "<input type=\"checkbox\" checked=\"checked\">";
+            } else {
+                td_0.innerHTML = "<input type=\"checkbox\">";
+            }
+            if(i % 2 == 0) {
+                tr.style.backgroundColor = "#e6e6e6";
+            } else {
+                tr.style.backgroundColor = "#f2f2f2";
+            }
+        }
+      }
+
+      function newSpecial() {
+        var name = document.getElementById("SpecialsName99_input").value;
+        var price = parseFloat(document.getElementById("SpecialsPrice99_input").value);
+        var accesso = dummydummy2selection;
+        var desc = document.getElementById("SpecialsDialogArea99").value;
+        if(name.length < 1 || desc.length < 1 || !isNr(price)) {
+            $(function() {
+                $( '#IlligalInputError' ).dialog( 'open' );
+            });
+            return;
+        }
+        dummy_vehicle_specialmodel_name.push(name);
+        dummy_vehicle_specialmodel_desc.push(desc);
+        dummy_vehicle_specialmodel_extra.push(accesso);
+        dummy_vehicle_specialmodel_price.push(price);
+        initSpecialsDialogEditPanelViewModelsTableSelection = dummy_vehicle_specialmodel_name.length;
+        initSpecialsDialogEditPanelViewModels(false);
+      }
+
+      function openNewSpecialsDialogEditPanel() {
+        dummy_vehicle_specialmodel_name.push("");
+        dummy_vehicle_specialmodel_desc.push("");
+        dummy_vehicle_specialmodel_extra.push("");
+        dummy_vehicle_specialmodel_price.push(0);
+        initSpecialsDialogEditPanelViewModels(false);
+        var id = dummy_vehicle_specialmodel_name.length - 1;
+        document.getElementById('SpecialModelDialogEditPanelEditSpecialModelAccessoryHiddenId').value = id;
+        document.getElementById('SpecialModelDialogEditPanelEditSpecialModel_NameInput').value = dummy_vehicle_specialmodel_name[id];
+        document.getElementById('SpecialModelDialogEditPanelEditSpecialModel_PriceInput').value = "";  //dummy_vehicle_specialmodel_price[id];
+        var price = 0;
+        var accesso = dummy_vehicle_specialmodel_extra[id];
+        for(var z = 0; z < accessory_name.length; z++) {
+            if(accesso.indexOf('xS' + z + 'x') != -1) {
+                price += accessory_price[z];
+            }
+        }
+        dummydummyprice = price;
+        document.getElementById('SpecialModelDialogEditPanelEditSpecialModel_CPriceInput').value = round(price) + " \u20AC";
+        document.getElementById('SpecialModelDialogEditPanelEditSpecialModel_DescInput').value = dummy_vehicle_specialmodel_desc[id];
+        $(function() {
+            $( '#SpecialModelDialogEditPanelEditSpecialModel' ).dialog( 'open' );
+        });
+        SpecialModelDialogEditPanelEditSpecialModelCancelClick();
+      }
+
+      function editSpecial() {
+        // check selection
+        if(initSpecialsDialogEditPanelViewModelsTableSelection > 1 && initSpecialsDialogEditPanelViewModelsTableSelection <= dummy_vehicle_specialmodel_name.length) {
+            // get variables
+            var name = document.getElementById("SpecialsName99_input").value;
+            var price = parseFloat(document.getElementById("SpecialsPrice99_input").value);
+            var accesso = dummydummy2selection;
+            var desc = document.getElementById("SpecialsDialogArea99").value;
+            var id = initSpecialsDialogEditPanelViewModelsTableSelection - 1;
+            // check vars
+            if(name.length < 1 || desc.length < 1 || !isNr(price)) {
+                $(function() {
+                    $( '#IlligalInputError' ).dialog( 'open' );
+                });
+                return;
+            }
+            // change special
+            dummy_vehicle_specialmodel_name[id] = name;
+            dummy_vehicle_specialmodel_desc[id] = desc;
+            dummy_vehicle_specialmodel_extra[id] = accesso;
+            dummy_vehicle_specialmodel_price[id] = price;
+            // repaint dialog
+            initSpecialsDialogEditPanelViewModels(false);
+        }
+      }
+      function deleteSpecial() {
+        if(initSpecialsDialogEditPanelViewModelsTableSelection > 1 && initSpecialsDialogEditPanelViewModelsTableSelection <= dummy_vehicle_specialmodel_name.length) {
+            if(confirm(getLanguageStringbyIdStr("SpecialModelDialogEditPanelDelQuestion"))) {
+                var id = initSpecialsDialogEditPanelViewModelsTableSelection - 1;
+                if(selectedspecial == id) {
+                    selectedspecial = 0;
+                } else if(id < selectedspecial) {
+                    selectedspecial--;
+                }
+                dummy_vehicle_specialmodel_name = deleteElement(dummy_vehicle_specialmodel_name, id);
+                dummy_vehicle_specialmodel_desc = deleteElement(dummy_vehicle_specialmodel_desc, id);
+                dummy_vehicle_specialmodel_extra = deleteElement(dummy_vehicle_specialmodel_extra, id);
+                dummy_vehicle_specialmodel_price = deleteElement(dummy_vehicle_specialmodel_price, id);
+                initSpecialsDialogEditPanelViewModelsTableSelection = 0;
+                initSpecialsDialogEditPanelViewModels(false);
+            }
+        }
+      }
+
+      function openSpecialDetails() {
+        if(initSpecialsDialogEditPanelViewModelsTableSelection >= 1 && initSpecialsDialogEditPanelViewModelsTableSelection <= dummy_vehicle_specialmodel_name.length) {
+            _SpecialModelDialogEditPanelTreeDialogID = initSpecialsDialogEditPanelViewModelsTableSelection - 1;
+            $(function() {
+                $( '#SpecialModelDialogEditPanelTreeDialog' ).dialog( 'open' );
+            });
+        }
+      }
+
+      function SpecialsDialogEditPanelSaveChangesButtonClick() {
+        // save changes
+        vehicle_specialmodel_name = dummy_vehicle_specialmodel_name;
+        vehicle_specialmodel_desc = dummy_vehicle_specialmodel_desc;
+        vehicle_specialmodel_extra = dummy_vehicle_specialmodel_extra;
+        vehicle_specialmodel_price = dummy_vehicle_specialmodel_price;
+        // update all forms
+        updateAllPanels() ;
+        // closing window
+        if(loadTestVersion) {
+            window.setTimeout("$(function() { $( '#SpecialsTablePanel_dialog' ).dialog( 'close' );  });", Math.random() * 1000 + 500);
+        } else {
+            $(function() {
+                $( '#SpecialsTablePanel_dialog' ).dialog( 'close' );
+            });
+        }
+      }
+
+    // -->
+  </script>
+  <div id="SpecialModelDialogEditPanelEditSpecialModel" title="">
+  <center>
+    <table class="dataTable">
+      <tr class="dataRow">
+        <td class="dataCell label" id="SpecialModelDialogEditPanelEditSpecialModel_Name"></td>
+        <td class="dataCell label" id="SpecialModelDialogEditPanelEditSpecialModel_Price"></td>
+        <td class="dataCell label" id="SpecialModelDialogEditPanelEditSpecialModel_CPrice"></td>
+      </tr>
+      <tr class="dataRow">
+        <td class="dataCell editable"><input id="SpecialModelDialogEditPanelEditSpecialModel_NameInput" type="text" size="24"></td>
+        <td class="dataCell editable"><input id="SpecialModelDialogEditPanelEditSpecialModel_PriceInput" type="text" size="10"></td>
+        <td class="dataCell notEditable"><input id="SpecialModelDialogEditPanelEditSpecialModel_CPriceInput" type="text" size="10" readonly></td>
+      </tr>
+     </table>
+     <table class="dataTable">
+      <tr class="dataRow">
+        <td class="dataCell label" id="SpecialModelDialogEditPanelEditSpecialModel_Desc"></td>
+      </tr>
+      <tr class="dataRow">
+        <td class="dataCell"><textarea id="SpecialModelDialogEditPanelEditSpecialModel_DescInput" style="width: 373px; height: 150px;"></textarea></td>
+      </tr>
+    </table>
+    <table class="dataTable" id="SpecialModelDialogEditPanelEditSpecialModelAccessorySelectionTable">
+    </table>
+  </center>
+    <input id="SpecialModelDialogEditPanelEditSpecialModelAccessoryHiddenId" type="hidden" value="">
+  </div>
+  <script type="text/javascript">
+    // <!--
+        document.getElementById('SpecialModelDialogEditPanelEditSpecialModel').title = getLanguageStringbyIdStr("SpecialModelDialogEditPanelEditSpecialModel");
+        document.getElementById('SpecialModelDialogEditPanelEditSpecialModel_Name').innerHTML = getLanguageStringbyIdStr("SpecialModelDialogEditPanelEditSpecialModel_Name");
+        document.getElementById('SpecialModelDialogEditPanelEditSpecialModel_Price').innerHTML = getLanguageStringbyIdStr("SpecialModelDialogEditPanelEditSpecialModel_Price");
+        document.getElementById('SpecialModelDialogEditPanelEditSpecialModel_CPrice').innerHTML = getLanguageStringbyIdStr("SpecialModelDialogEditPanelEditSpecialModel_CPrice");
+        document.getElementById('SpecialModelDialogEditPanelEditSpecialModel_Desc').innerHTML = getLanguageStringbyIdStr("SpecialModelDialogEditPanelEditSpecialModel_Desc");
+
+        var dummydummyselection;
+
+        function initSpecialModelDialogEditPanelEditSpecialModel(initdummyvar) {
+            if(initdummyvar)
+                dummydummyselection = dummy_vehicle_specialmodel_extra[document.getElementById('SpecialModelDialogEditPanelEditSpecialModelAccessoryHiddenId').value];
+            var tbl = document.getElementById('SpecialModelDialogEditPanelEditSpecialModelAccessorySelectionTable');
+            while(tbl.childNodes.length != 0)
+                tbl.removeChild(tbl.firstChild);
+            var row = 0;
+            var tr = tbl.insertRow(row++);
+            tr.className += " dataRow";
+            tr.className += " headerRow";
+            var td_0 = document.createElement("td");
+            var td_1 = document.createElement("td");
+            var td_2 = document.createElement("td");
+            var td_3 = document.createElement("td");
+            td_0.className += " dataCell";
+            td_1.className += " dataCell";
+            td_2.className += " dataCell";
+            td_3.className += " dataCell";
+            td_0.className += " headerCell";
+            td_1.className += " headerCell";
+            td_2.className += " headerCell";
+            td_3.className += " headerCell";
+            td_1.appendChild(document.createTextNode(" " + getLanguageStringbyIdStr("VehicleDialogEditPanelTableHeaderName") + " "));
+            td_2.appendChild(document.createTextNode(" " + getLanguageStringbyIdStr("VehicleDialogEditPanelTableHeaderID") + " "));
+            td_3.appendChild(document.createTextNode(" " + getLanguageStringbyIdStr("VehicleDialogEditPanelTableHeaderPrices") + " "));
+            tr.appendChild(td_0);
+            tr.appendChild(td_1);
+            tr.appendChild(td_2);
+            tr.appendChild(td_3);
+            td_1.style.width = "200px";
+            td_2.style.width = "50px";
+            td_3.style.width = "100px";
+            td_1.style.textAlign = "left";
+            td_2.style.textAlign = "center";
+            td_3.style.textAlign = "right";
+            tr.style.backgroundColor = "#D0D0D0";
+            for(var i = 0; i < accessory_name.length; i++) {
+                tr = tbl.insertRow(row++);
+                tr.className += " dataRow";
+                td_0 = document.createElement("td");
+                td_1 = document.createElement("td");
+                td_2 = document.createElement("td");
+                td_3 = document.createElement("td");
+                td_0.className += " dataCell";
+                td_1.className += " dataCell";
+                td_2.className += " dataCell";
+                td_3.className += " dataCell";
+                td_1.appendChild(document.createTextNode(accessory_name[i]));
+                td_2.appendChild(document.createTextNode(accessory_id[i]));
+                td_3.appendChild(document.createTextNode(round(accessory_price[i]) + " \u20AC"));
+                tr.appendChild(td_0);
+                tr.appendChild(td_1);
+                tr.appendChild(td_2);
+                tr.appendChild(td_3);
+                td_1.style.textAlign = "left";
+                td_2.style.textAlign = "center";
+                td_3.style.textAlign = "right";
+                td_1.style.cursor = "pointer";
+                td_2.style.cursor = "pointer";
+                td_3.style.cursor = "pointer";
+                var uristring = decodeURI(window.location.search.toUpperCase());
+                if(uristring.indexOf("&ROWSELECT=1") != -1 || uristring.indexOf("?ROWSELECT=1") != -1)
+                {
+                    tr.onclick = function() {
+                        var id = 0;
+                        for(var node = this.parentNode.firstChild; node.nextSibling != this; node = node.nextSibling) ++id;
+                        if(dummydummyselection.indexOf("xS" + id + "x") != -1) {
+                            // delete from list
+                            var pos = dummydummyselection.indexOf("xS" + id + "x");
+                            dummydummyselection = dummydummyselection.substr(0, pos) + dummydummyselection.substr(pos + ("xS" + id + "x").length);
+                            dummydummyprice -= accessory_price[id];
+                        } else {
+                            // insert in list
+                            dummydummyselection += "xS" + id + "x"
+                            dummydummyprice += accessory_price[id];
+                        }
+                        document.getElementById('SpecialModelDialogEditPanelEditSpecialModel_CPriceInput').value = round(dummydummyprice) + " \u20AC";
+                        initSpecialModelDialogEditPanelEditSpecialModel(false);
+                    };
+                } else {
+                    td_0.onclick = function() {
+                        var id = 0;
+                        var tbl = this.parentNode.parentNode;
+                        for(var node = tbl.firstChild; node.nextSibling != this.parentNode; node = node.nextSibling) ++id;
+                        if(dummydummyselection.indexOf("xS" + id + "x") != -1) {
+                            // delete from list
+                            var pos = dummydummyselection.indexOf("xS" + id + "x");
+                            dummydummyselection = dummydummyselection.substr(0, pos) + dummydummyselection.substr(pos + ("xS" + id + "x").length);
+                            dummydummyprice -= accessory_price[id];
+                        } else {
+                            // insert in list
+                            dummydummyselection += "xS" + id + "x"
+                            dummydummyprice += accessory_price[id];
+                        }
+                        document.getElementById('SpecialModelDialogEditPanelEditSpecialModel_CPriceInput').value = round(dummydummyprice) + " \u20AC";
+                        initSpecialModelDialogEditPanelEditSpecialModel(false);
+                    };
+                }
+                if(dummydummyselection.indexOf("xS" + i + "x") != -1) {
+                //tr.style.backgroundColor = "#33CC55";
+                    td_0.innerHTML = "<input type=\"checkbox\" checked=\"checked\">";
+                } else {
+                    td_0.innerHTML = "<input type=\"checkbox\">";
+                }
+                if(i % 2 == 0) {
+                    tr.style.backgroundColor = "#e6e6e6";
+                } else {
+                    tr.style.backgroundColor = "#f2f2f2";
+                }
+            }
+        }
+
+        function SpecialModelDialogEditPanelEditSpecialModelChangeClick() {
+            var name = document.getElementById('SpecialModelDialogEditPanelEditSpecialModel_NameInput').value;
+            var desc = document.getElementById('SpecialModelDialogEditPanelEditSpecialModel_DescInput').value;
+            var accesso = dummydummyselection;
+            var price = document.getElementById('SpecialModelDialogEditPanelEditSpecialModel_PriceInput').value;
+            var id = parseInt(document.getElementById('SpecialModelDialogEditPanelEditSpecialModelAccessoryHiddenId').value);
+            if(name.length < 1 || desc.length < 1 || !isNr(price)) {
+                $(function() {
+                    $( '#IlligalInputError' ).dialog( 'open' );
+                });
+                return;
+            }
+            dummy_vehicle_specialmodel_name[id] = name;
+            dummy_vehicle_specialmodel_desc[id] = desc;
+            dummy_vehicle_specialmodel_extra[id] = accesso;
+            dummy_vehicle_specialmodel_price[id] = parseFloat(price);
+            $(function() {
+                $( '#SpecialModelDialogEditPanelEditSpecialModel' ).dialog( 'close' );
+            });
+            initSpecialsDialogEditPanelViewModels(false);
+        }
+
+        function SpecialModelDialogEditPanelEditSpecialModelCancelClick() {
+            //if(dummy_vehicle_specialmodel_name[dummy_vehicle_specialmodel_name.length() - 1].length == 0) return;
+            dummy_vehicle_specialmodel_name.pop();
+            dummy_vehicle_specialmodel_desc.pop();
+            dummy_vehicle_specialmodel_extra.pop();
+            dummy_vehicle_specialmodel_price.pop();
+            initSpecialsDialogEditPanelViewModels(false);
+        }
+    // -->
+  </script>
+
+  <div id="SpecialModelDialogEditPanelTreeDialog" title="">
+    <table id="DetailsTree" class="tree" width="600px">
+
+    </table>
+  </div>
+  <script type="text/javascript">
+    // <!--
+      document.getElementById('SpecialModelDialogEditPanelTreeDialog').title = getLanguageStringbyIdStr("SpecialModelDialogEditPanelTreeDialogTitle");
+
+      function initSpecialModelDialogEditPanelTreeDialog(x1, x2) {
+        var id = _SpecialModelDialogEditPanelTreeDialogID;
+        var table = document.getElementById('DetailsTree');
+        // empty table
+        $(table).children().remove();
+        // build table
+        var tbody = $("<tbody></tbody>");
+        tbody.append("<tr class=\"treenode even\" depth=\"0\"><td>" + getLanguageStringbyIdStr( "SpecialModelDialogEditPanelTreeDialogInfo" ) + "<td></tr>");
+        tbody.append("<tr class=\"treenode odd\" depth=\"1\"><td><span><span class=\"treenodespacer\" style=\"padding:5px\">&nbsp;&nbsp;</span><span class=\"treetoggler\"><img src=\"include/" + ((x1 == "hidden")?"expand":"collapse") + ".png\" onClick=\"javascript: initSpecialModelDialogEditPanelTreeDialog(\'" + ((x1 == "hidden")?"visible":"hidden") + "\', \'" + x2 + "\');\"/></span><span>" + getLanguageStringbyIdStr( "SpecialModelDialogEditPanelTreeDialogAccessories" ) + "</span></span></td></tr>");
+        var j = 0;
+        for(var z = 0; z < accessory_name.length; z++) {
+          if(dummy_vehicle_specialmodel_extra[id].indexOf("xS" + z + "x") != -1) {
+            if(x1 == "hidden") {
+              tbody.append("<tr class=\"treenode hidden\" depth=\"2\"><td><span><span class=\"treenodespacer\" style=\"padding:10px;\">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span>" + accessory_name[z] + "</span></span></td></tr>");
+            } else {
+              if(j++ % 2 == 0) {
+                tbody.append("<tr class=\"treenode even\" depth=\"2\"><td><span><span class=\"treenodespacer\" style=\"padding: 10px;\">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span>" + accessory_name[z] + "</span></span></td></tr>");
+              } else {
+                tbody.append("<tr class=\"treenode odd\" depth=\"2\"><td><span><span class=\"treenodespacer\" style=\"padding:10px;\">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span>" + accessory_name[z] + "</span></span></td></tr>");
+              }
+            }
+          }
+        }
+        if(j++ % 2 == 0) {
+          tbody.append("<tr class=\"treenode even\" depth=\"1\"><td><span><span class=\"treenodespacer\" style=\"padding:5px\">&nbsp;&nbsp;</span><span class=\"treetoggler\"><img src=\"include/" + ((x2 == "hidden")?"expand":"collapse") + ".png\" onClick=\"javascript: initSpecialModelDialogEditPanelTreeDialog(\'" + x1 + "\', \'" + ((x2 == "hidden")?"visible":"hidden") + "\');\"/></span><span>" + getLanguageStringbyIdStr( "SpecialModelDialogEditPanelTreeDialogDescription" ) + "</span></span></td></tr>");
+        } else {
+          tbody.append("<tr class=\"treenode odd\" depth=\"1\"><td><span><span class=\"treenodespacer\" style=\"padding:5px\">&nbsp;&nbsp;</span><span class=\"treenodetoggler\"><img src=\"include/" + ((x2 == "hidden")?"expand":"collapse") + ".png\" onClick=\"javascript: initSpecialModelDialogEditPanelTreeDialog(\'" + x1 + "\', \'" + ((x2 == "hidden")?"visible":"hidden") + "\');\"/></span><span>" + getLanguageStringbyIdStr( "SpecialModelDialogEditPanelTreeDialogDescription" ) + "</span></span></td></tr>");
+        }
+        var description = dummy_vehicle_specialmodel_desc[id].replace(new RegExp('<br\\s*/?>' , 'gi'), '');
+        description = description.replace(new RegExp("\\n|\\r", 'gi'), '');
+        var desc = "";
+        var spaceFlag = false;
+        for(var i = 0; i < description.length; i++) {
+          var k = description.substr(i, 1);
+          if(k != " ") {
+            spaceFlag = false;
+            desc = desc + "" + k;
+          } else {
+            if(!spaceFlag) {
+              desc = desc + "" + k;
+            }
+            spaceFlag = true;
+          }
+        }
+        if(x2 == "hidden")
+          tbody.append("<tr class=\"treenode hidden\" depth=\"2\"><td><span><span class=\"treenodespacer\" style=\"padding: 10px;\">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span> " + desc + "</span></span></td></tr>");
+        else {
+          if(j % 2 == 0) {
+            tbody.append("<tr class=\"treenode even\" depth=\"2\"><td><span><span class=\"treenodespacer\" style=\"padding: 10px;\">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span>" + desc + "</span></span></td></tr>");
+          } else {
+            tbody.append("<tr class=\"treenode odd\" depth=\"2\"><td><span><span class=\"treenodespacer\" style=\"padding: 10px;\">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span>" + desc + "</span></span></td></tr>");
+          }
+        }
+        // append table
+        $(table).append(tbody);
+      }
+    // -->
+  </script>
+  <!-- }}} End of Special Model Edit Dialog -->
+
+  <!-- {{{ Accessory Dialog Edit Panel and subcomponents -->
+  <div id="AccessoryDialogTablePanel_dialog" title="">
+   <div class="panel" id="AccessoryTablePanel">
+   <table class="dataTable" id="AccessoriesTable">
+    <!-- In this table there will be pased by script all accessory elements to edit them -->
+   </table>
+  </div>
+   <br/>
+    <br/>
+    <hr/>
+    <div class="panel" id="AccessoryDialogEditPanel">
+    <table style="margin: 5px; padding: 5px;">
+        <tr>
+            <td><span id="AccessoryNameLabel" class="label">Name:</span></td>
+            <td><span id="AccessoryIdLabel" class="label" style="width: 50px;">Id:</span></td>
+            <td style="text-overflow: ellipsis; white-space: nowrap; overflow: hidden; width: 99999px;"></td>
+            <td><span id="AccessoryPriceLabel" class="label">Price:</span></td>
+        </tr>
+        <tr>
+            <td id="AccessoryName" class="editable"><input id="AccessoryName_input" type="text"/></td>
+            <td class="editable" id="AccessoryId" type="text"><input id="AccessoryId_input" style="width: 50px;"/></td>
+            <td></td>
+            <td id="AccessoryPrice2" class="editable"><input id="AccessoryPrice2_input" type="text"/></td>
+        </tr>
+    </table>
+   </div>
+   <!--
+   <hr/>
+   <button type="button" style="float: right" id="AccessoryDialogEditPanelCreateNewAccessoryButton" onClick="$(function() { $( '#AccessoryDialogEditPanelCreateNewAccessory' ).dialog( 'open' ); });"></button>
+   -->
+  </div>
+  <script type="text/javascript">
+    // <!--
+      document.getElementById('AccessoryDialogTablePanel_dialog').title = getLanguageStringbyIdStr("SettingsChangeAccessory");
+        document.getElementById('AccessoryNameLabel').innerHTML = getLanguageStringbyIdStr("VehicleDialogEditPanelEditCarPanelVehicleName");
+        document.getElementById('AccessoryIdLabel').innerHTML = getLanguageStringbyIdStr("VehicleDialogEditPanelEditCarPanelVehicleID");
+        document.getElementById('AccessoryPriceLabel').innerHTML = getLanguageStringbyIdStr("VehicleDialogEditPanelEditCarPanelVehiclePrice");
+
+      //document.getElementById('AccessoryDialogEditPanelCreateNewAccessoryButton').innerHTML = getLanguageStringbyIdStr("SettingsChangeAccessoryCreateNewAccessory");
+
+      // some vars that will be edit
+      var dummyaccessory_name, dummyaccessory_price, dummyaccessory_id, dummyselectedaccesso, dummyvehicle_specialmodel_extra, initAccessoryDialogEditPanelTableSelected;
+
+      function initAccessoryDialogEditPanel(cpyelements) {
+        // cpy vars if neccessary
+        if(cpyelements) {
+            dummyaccessory_name = cloneArray(accessory_name);
+            dummyaccessory_price = cloneArray(accessory_price);
+            dummyaccessory_id = cloneArray(accessory_id);
+            dummyselectedaccesso = new String(selectedaccesso);
+            dummyvehicle_specialmodel_extra = cloneArray(vehicle_specialmodel_extra);
+            initAccessoryDialogEditPanelTableSelected = -1;
+        }
+        // init everything else
+        var tbl = document.getElementById('AccessoriesTable');
+        // clear table
+        while(tbl.childNodes.length != 0)
+            tbl.removeChild(tbl.firstChild);
+        // input all accessory in table
+        var row = 0;
+        var tr = tbl.insertRow(row++);
+        tr.className += " dataRow";
+        tr.className += " headerRow";
+        var td_1 = document.createElement("td");       // td for Accessory Name
+        var td_2 = document.createElement("td");       // td for ID
+        var td_3 = document.createElement("td");       // td for Price
+        var td_4 = document.createElement("td");       // td for edit
+        td_1.className += " dataCell";
+        td_2.className += " dataCell";
+        td_3.className += " dataCell";
+        td_4.className += " dataCell";
+        td_1.className += " headerCell";
+        td_2.className += " headerCell";
+        td_3.className += " headerCell";
+        td_4.className += " headerCell";
+        td_1.appendChild(document.createTextNode(" " + getLanguageStringbyIdStr("VehicleDialogEditPanelTableHeaderName") + " "));
+        td_2.appendChild(document.createTextNode(" " + getLanguageStringbyIdStr("VehicleDialogEditPanelTableHeaderID") + " "));
+        td_3.appendChild(document.createTextNode(" " + getLanguageStringbyIdStr("VehicleDialogEditPanelTableHeaderPrices") + " "));
+        td_4.appendChild(document.createTextNode(" " + getLanguageStringbyIdStr("VehicleDialogEditPanelTableHeaderEdit") + " "));
+        td_1.style.width = "200px";
+        td_2.style.width = "50px";
+        td_3.style.width = "100px";
+        td_4.style.width = "150px";
+        tr.appendChild(td_1);
+        tr.appendChild(td_2);
+        tr.appendChild(td_3);
+        tr.appendChild(td_4);
+        tr.style.backgroundColor = "#D0D0D0";
+            document.getElementById("AccessoryName_input").value = "";//dummyvehicleNames[i];
+            document.getElementById("AccessoryId_input").value = "";//dummyvehicleID[i];
+            document.getElementById("AccessoryPrice2_input").value = "";//dummyvehicle_price[i];
+        for(var i = 0; i < dummyaccessory_name.length; i++) {
+            tr = tbl.insertRow(row++);
+            tr.className += " dataRow";
+            tr.onclick = function() {
+                var i = 0;
+                for(var node = this.parentNode.firstChild; node != this; node = node.nextSibling) ++i;
+                initAccessoryDialogEditPanelTableSelected = i;
+                initAccessoryDialogEditPanel(false);
+            }
+            var td_1 = document.createElement("td");       // td for Accessory Name
+            var td_2 = document.createElement("td");       // td for ID
+            var td_3 = document.createElement("td");       // td for Price
+            var td_4 = document.createElement("td");       // td for edit
+            td_1.className += " dataCell";
+            td_2.className += " dataCell";
+            td_3.className += " dataCell";
+            td_4.className += " dataCell";
+            td_1.appendChild(document.createTextNode(" " + dummyaccessory_name[i] + " "));
+            td_2.appendChild(document.createTextNode(" " + dummyaccessory_id[i] + " "));
+            td_3.appendChild(document.createTextNode(" " + round(dummyaccessory_price[i]) + " \u20AC" + " "));
+            var tr_4Link1 = document.createElement("a");
+            var tr_4Link2 = document.createElement("a");
+            tr_4Link1.appendChild(document.createTextNode( getLanguageStringbyIdStr("VehicleDialogEditPanelTableDel") ));
+            tr_4Link2.appendChild(document.createTextNode( getLanguageStringbyIdStr("VehicleDialogEditPanelTableEdit") ));
+            tr_4Link1.href = "#";
+            tr_4Link2.href = "#";
+            tr_4Link1.onclick = function() {
+                if(confirm(getLanguageStringbyIdStr("AccessoryDialogEditPanelDelQuestion"))) {
+                    // get the selected id
+                    var id = 0;
+                    // .parentNode.parentNode.parentNode ist the table (tr and td)
+                    for(var node = this.parentNode.parentNode.parentNode.firstChild; node != this.parentNode.parentNode; node = node.nextSibling) ++id;
+                    id--;
+                    // correct the accessory
+                    dummyselectedaccesso = deleteAccessoIndex(dummyselectedaccesso, id);
+                    for(var z = 0; z<dummyvehicle_specialmodel_extra.length; z++)
+                        dummyvehicle_specialmodel_extra[z] = deleteAccessoIndex(dummyvehicle_specialmodel_extra[z], id);
+                    dummyaccessory_name = deleteElement(dummyaccessory_name, id);
+                    dummyaccessory_price = deleteElement(dummyaccessory_price, id);
+                    dummyaccessory_id = deleteElement(dummyaccessory_id, id);
+                    // correct table print
+                    initAccessoryDialogEditPanel(false);
+                }
+            }
+            tr_4Link2.onclick = function() {
+                // get id of accessory to edit
+                var id = 0;
+                for(var node = this.parentNode.parentNode.parentNode.firstChild; node != this.parentNode.parentNode; node = node.nextSibling) ++id;
+                id--;
+                // sicky form
+                document.getElementById('AccessoryDialogEditPanel_EditAccessoryNameOut_input').value = dummyaccessory_name[id];
+                document.getElementById('AccessoryDialogEditPanel_EditAccessoryIDOut_input').value = dummyaccessory_id[id];
+                document.getElementById('AccessoryDialogEditPanel_EditAccessoryPricesOut_input').value = dummyaccessory_price[id];
+                document.getElementById('AccessoryDialogEditPanel_IDID').value = id;
+                // open form
+                $(function() {
+                    $( '#AccessoryDialogEditPanelEditAccessory' ).dialog( 'open' );
+                });
+            }
+            td_4.appendChild(tr_4Link1);
+            td_4.appendChild(document.createTextNode(" "));
+            td_4.appendChild(tr_4Link2);
+            td_1.style.textAlign = "left";
+            td_2.style.textAlign = "left";
+            td_3.style.textAlign = "right";
+            td_4.style.textAlign = "right";
+            tr.appendChild(td_1);
+            tr.appendChild(td_2);
+            tr.appendChild(td_3);
+            tr.appendChild(td_4);
+            if(i + 1 == initAccessoryDialogEditPanelTableSelected) {
+                tr.style.backgroundColor = "#00BFFF";
+                if(0 < initAccessoryDialogEditPanelTableSelected && initAccessoryDialogEditPanelTableSelected <= dummyaccessory_name.length) {
+                    document.getElementById("AccessoryName_input").value = dummyaccessory_name[initAccessoryDialogEditPanelTableSelected - 1];
+                    document.getElementById("AccessoryId_input").value = dummyaccessory_id[initAccessoryDialogEditPanelTableSelected - 1];
+                    document.getElementById("AccessoryPrice2_input").value = dummyaccessory_price[initAccessoryDialogEditPanelTableSelected - 1];
+                }
+            } else if((i + 1) % 2 == 0) {
+                tr.style.backgroundColor = "#e6e6e6";
+            } else {
+                tr.style.backgroundColor = "#f2f2f2";
+            }
+        }
+      }
+
+      function newAccessory() {
+            var name = document.getElementById('AccessoryName_input').value;
+            var id = document.getElementById('AccessoryId_input').value;
+            var price = document.getElementById('AccessoryPrice2_input').value;
+            if(name.length < 1 || id.length < 1 || !isNr(price)) {
+                $(function() {
+                    $( '#IlligalInputError' ).dialog( 'open' );
+                });
+                return;
+            }
+            // save changes
+            dummyaccessory_name.push(name);
+            dummyaccessory_price.push(parseFloat(price));
+            dummyaccessory_id.push(id);
+            initAccessoryDialogEditPanel(false);
+      }
+
+      function editAccessory() {
+        if(initAccessoryDialogEditPanelTableSelected >= 1 && initAccessoryDialogEditPanelTableSelected <= dummyaccessory_price.length) {
+            // get the selected id
+            var interalId = initAccessoryDialogEditPanelTableSelected - 1;
+            // sicky form
+            var name = document.getElementById('AccessoryName_input').value;
+            var id = document.getElementById('AccessoryId_input').value;
+            var price = document.getElementById('AccessoryPrice2_input').value;
+            if(name.length < 1 || id.length < 1 || !isNr(price)) {
+                $(function() {
+                    $( '#IlligalInputError' ).dialog( 'open' );
+                });
+                return;
+            }
+            // save changes
+            dummyaccessory_name[interalId] = name;
+            dummyaccessory_price[interalId] = parseFloat(price);
+            dummyaccessory_id[interalId] = id;
+            initAccessoryDialogEditPanel(false);
+        }
+      }
+
+      function deleteAccessory() {
+        if(initAccessoryDialogEditPanelTableSelected >= 1 && initAccessoryDialogEditPanelTableSelected <= dummyaccessory_price.length) {
+            if(confirm(getLanguageStringbyIdStr("AccessoryDialogEditPanelDelQuestion"))) {
+                // get the selected id
+                var id = initAccessoryDialogEditPanelTableSelected - 1;
+                // correct the accessory
+                dummyselectedaccesso = deleteAccessoIndex(dummyselectedaccesso, id);
+                for(var z = 0; z<dummyvehicle_specialmodel_extra.length; z++)
+                    dummyvehicle_specialmodel_extra[z] = deleteAccessoIndex(dummyvehicle_specialmodel_extra[z], id);
+                dummyaccessory_name = deleteElement(dummyaccessory_name, id);
+                dummyaccessory_price = deleteElement(dummyaccessory_price, id);
+                dummyaccessory_id = deleteElement(dummyaccessory_id, id);
+                // correct table print
+                initAccessoryDialogEditPanelTableSelected = -1;
+                initAccessoryDialogEditPanel(false);
+            }
+        }
+      }
+
+      function EditAccessoryPanelEdit() {
+        accessory_name = dummyaccessory_name;
+        accessory_price = dummyaccessory_price;
+        accessory_id = dummyaccessory_id;
+        selectedaccesso = dummyselectedaccesso;
+        vehicle_specialmodel_extra = dummyvehicle_specialmodel_extra;
+        updateAllPanels();
+        if(loadTestVersion) {
+            window.setTimeout("$(function() { $( '#AccessoryDialogTablePanel_dialog' ).dialog( 'close' );  });", Math.random() * 1000 + 500);
+        } else {
+            $(function() {
+                $( '#AccessoryDialogTablePanel_dialog' ).dialog( 'close' );
+            });
+        }
+      }
+    // -->
+  </script>
+  <div id="AccessoryDialogEditPanelEditAccessory">
+   <center>
+    <table>
+     <tr>
+      <td class="label" id="AccessoryDialogEditPanel_EditAccessoryName"></td>
+      <td class="label" id="AccessoryDialogEditPanel_EditAccessoryID"></td>
+      <td class="label" id="AccessoryDialogEditPanel_EditAccessoryPrices"></td>
+     </tr>
+     <tr>
+      <td class="editable" id="AccessoryDialogEditPanel_EditAccessoryNameOut"><input type="text" id="AccessoryDialogEditPanel_EditAccessoryNameOut_input" value="" size="10"></td>
+      <td class="editable" id="AccessoryDialogEditPanel_EditAccessoryIDOut"><input type="text" id="AccessoryDialogEditPanel_EditAccessoryIDOut_input" value="" size="3"></td>
+      <td class="editable" id="AccessoryDialogEditPanel_EditAccessoryPricesOut"><input type="text" id="AccessoryDialogEditPanel_EditAccessoryPricesOut_input" value="" size="7"></td>
+    </tr>
+    </table>
+    <input type="hidden" id="AccessoryDialogEditPanel_IDID" value="">
+   </center>
+  </div>
+  <script type="text/javascript">
+    // <!--
+        document.getElementById('AccessoryDialogEditPanelEditAccessory').title = getLanguageStringbyIdStr("AccessoryDialogEditPanelEditAccessoryPanelTitle");
+        document.getElementById('AccessoryDialogEditPanel_EditAccessoryName').innerHTML = getLanguageStringbyIdStr("VehicleDialogEditPanelEditCarPanelVehicleName");
+        document.getElementById('AccessoryDialogEditPanel_EditAccessoryID').innerHTML = getLanguageStringbyIdStr("VehicleDialogEditPanelEditCarPanelVehicleID");
+        document.getElementById('AccessoryDialogEditPanel_EditAccessoryPrices').innerHTML = getLanguageStringbyIdStr("VehicleDialogEditPanelEditCarPanelVehiclePrice");
+
+        function Edit_Accessory_PanelEdit() {
+            var name = document.getElementById('AccessoryDialogEditPanel_EditAccessoryNameOut_input').value;
+            var id = document.getElementById('AccessoryDialogEditPanel_EditAccessoryIDOut_input').value;
+            var price = document.getElementById('AccessoryDialogEditPanel_EditAccessoryPricesOut_input').value;
+            if(name.length < 1 || id.length < 1 || !isNr(price)) {
+                $(function() {
+                    $( '#IlligalInputError' ).dialog( 'open' );
+                });
+                return;
+            }
+            // save changes
+            dummyaccessory_name[document.getElementById('AccessoryDialogEditPanel_IDID').value] = name;
+            dummyaccessory_price[document.getElementById('AccessoryDialogEditPanel_IDID').value] = parseFloat(price);
+            dummyaccessory_id[document.getElementById('AccessoryDialogEditPanel_IDID').value] = id;
+            initAccessoryDialogEditPanel(false);
+            // close window
+            $(function() {
+                $( '#AccessoryDialogEditPanelEditAccessory' ).dialog( 'close' );
+            });
+        }
+    // -->
+  </script>
+  <div id="AccessoryDialogEditPanelCreateNewAccessory">
+   <center>
+    <table class="dataTable">
+     <tr class="dataRow">
+     <td class="dataCell label" id="AccessoryDialogEditPanel_CreateAccessoryName"></td>
+     <td class="dataCell label" id="AccessoryDialogEditPanel_CreateAccessoryID"></td>
+     <td class="dataCell label" id="AccessoryDialogEditPanel_CreateAccessoryPrices"></td>
+    </tr>
+    <tr class="dataRow">
+     <td class="dataCell editable"><input type="text" id="AccessoryDialogEditPanel_CreateAccessoryNameOut" value="" size="10"></td>
+     <td class="dataCell editable"><input type="text" id="AccessoryDialogEditPanel_CreateAccessoryIDOut" value="" size="3"></td>
+     <td class="dataCell editable"><input type="text" id="AccessoryDialogEditPanel_CreateAccessoryPricesOut" value="" size="7"></td>
+    </tr>
+    </table>
+   </center>
+  </div>
+  <script type="text/javascript">
+    // <!--
+        document.getElementById('AccessoryDialogEditPanelCreateNewAccessory').title = getLanguageStringbyIdStr("AccessoryDialogEditPanelCreateNewAccessory");
+        document.getElementById('AccessoryDialogEditPanel_CreateAccessoryName').innerHTML = getLanguageStringbyIdStr("VehicleDialogEditPanelEditCarPanelVehicleName");
+        document.getElementById('AccessoryDialogEditPanel_CreateAccessoryID').innerHTML = getLanguageStringbyIdStr("VehicleDialogEditPanelEditCarPanelVehicleID");
+        document.getElementById('AccessoryDialogEditPanel_CreateAccessoryPrices').innerHTML = getLanguageStringbyIdStr("VehicleDialogEditPanelEditCarPanelVehiclePrice");
+
+        function createNew_Accessory_PanelCreateNew() {
+            var name = document.getElementById('AccessoryDialogEditPanel_CreateAccessoryNameOut').value;
+            var id = document.getElementById('AccessoryDialogEditPanel_CreateAccessoryIDOut').value;
+            var price = document.getElementById('AccessoryDialogEditPanel_CreateAccessoryPricesOut').value;
+            if(name.length < 1 || id.length < 1 || !isNr(price)) {
+                $(function() {
+                    $( '#IlligalInputError' ).dialog( 'open' );
+                });
+                return;
+            }
+            // save changes
+            dummyaccessory_name.push(name);
+            dummyaccessory_price.push(parseFloat(price));
+            dummyaccessory_id.push(id);
+            initAccessoryDialogEditPanel(false);
+            // close window
+            $(function() {
+                $( '#AccessoryDialogEditPanelCreateNewAccessory' ).dialog( 'close' );
+            });
+        }
+    // -->
+  </script>
+  <!-- }}} -->
+
+  <!-- {{{ Order Dialog -->
+  <div id="ViewPurchaseOrderPanel" title="">
+   <fieldset style="padding: 10px;">
+    <legend id="ViewPurchaseOrderDialog1"></legend>
+    <table>
+     <tr>
+      <td class="label" id="ViewPurchaseOrderDialogSelectedVehicle" width="250"></td>
+      <td class="textfield" id="SelectedModelTxtFld" style="border: 1px solid #000; width: 250px; overflow: hidden">&nbsp;</td>
+     </tr>
+    </table>
+   </fieldset>
+   <br/>
+   <fieldset style="padding: 10px;">
+    <legend id="ViewPurchaseOrderDialog2"></legend>
+    <table>
+     <tr>
+      <td class="label" id="ViewPurchaseOrderDialogSelectedSpecial" width="250"></td>
+      <td class="textfield" id="SelectedSpecialTxtFld" style="border: 1px solid #000; width: 250px; overflow: hidden">&nbsp;</td>
+     </tr>
+    </table>
+   </fieldset>
+   <br/>
+   <fieldset style="padding: 10px;">
+    <legend id="ViewPurchaseOrderDialog3"></legend>
+    <table id="ViewPurchaseOrderDialog3Table">
+
+    </table>
+   </fieldset>
+   <br/>
+   <fieldset style="padding: 10px;">
+    <legend id="ViewPurchaseOrderDialog4"></legend>
+    <table>
+     <tr>
+      <td id="ViewPurchaseOrderDialogFinalPrice" width="250"></td>
+      <td></td>
+      <td id="CalculatedPriceTxtFld" style="border: 1px solid #000; width: 250px; overflow: hidden">&nbsp;</td>
+     </tr>
+    </table>
+   </fieldset>
+  </div>
+
+  <script type="text/javascript">
+    // <!--
+    document.getElementById('ViewPurchaseOrderPanel').title = getLanguageStringbyIdStr("ViewPurchaseOrderDialogTitle");
+
+    document.getElementById('ViewPurchaseOrderDialog1').innerHTML = getLanguageStringbyIdStr("ViewPurchaseOrderDialogVehicleDetails");
+    document.getElementById('ViewPurchaseOrderDialog2').innerHTML = getLanguageStringbyIdStr("ViewPurchaseOrderDialogSpecialDetails");
+    document.getElementById('ViewPurchaseOrderDialog3').innerHTML = getLanguageStringbyIdStr("ViewPurchaseOrderDialogAccessoryDetails");
+    document.getElementById('ViewPurchaseOrderDialog4').innerHTML = getLanguageStringbyIdStr("ViewPurchaseOrderDialogPriceDetails");
+
+    document.getElementById('ViewPurchaseOrderDialogSelectedVehicle').innerHTML = getLanguageStringbyIdStr("ViewPurchaseOrderDialogSelectedVehicle");
+    document.getElementById('ViewPurchaseOrderDialogSelectedSpecial').innerHTML = getLanguageStringbyIdStr("ViewPurchaseOrderDialogSelectedSpecial");
+    document.getElementById('ViewPurchaseOrderDialogFinalPrice').innerHTML = getLanguageStringbyIdStr("ViewPurchaseOrderDialogFinalPrice");
+
+    var idMixer = Array("", "", "", "", "", "", "", "", "", "", "");
+
+    function initViewPurchaseOrderDialog() {
+      // init table
+      document.getElementById('SelectedModelTxtFld' + idMixer[7]).innerHTML = (selectedvehicle != 0)?vehicleNames[selectedvehicle - 1]:getLanguageStringbyIdStr("ViewPurchaseOrderDialogNoSelectedVehicle");
+      document.getElementById('SelectedSpecialTxtFld' + idMixer[8]).innerHTML = vehicle_specialmodel_name[selectedspecial];
+      // ViewPurchaseOrderDialog3Table + idMixer[9]
+        var table = $(document.getElementById("ViewPurchaseOrderDialog3Table" + idMixer[9]));
+        table.children().remove();
+        var tbody = $("<tbody></tbody>");
+        table.append(tbody);
+        var j = 0;
+        for(var i = 0; i < accessory_name.length; i++) {
+            if(selectedaccesso.indexOf("xS" + i + "x") != -1) {
+                flag = false;
+                tbody.append("<tr><td class=\"label\" id=\"label_" + accessory_name[i] + "\" width=\"250\">" + getLanguageStringbyIdStr("ViewPurchaseOrderDialogSelectedAccessory") + " " + (++j) + "</td><td class=\"textfield\" id=\"name_" + accessory_name[i] + "\" style=\"border: 1px solid #000; width: 250px; overflow: hidden\">" + accessory_name[i] + "</td></tr>");
+            }
+        }
+        if(j == 0) {
+            tbody.append("<tr><td class=\"label\" style=\"border: 1px solid #000; width: 510px; overflow: hidden; text-align: center\">" + getLanguageStringbyIdStr("ViewPurchaseOrderDialogNoSelectedAccessory") + "</td></tr>");
+        }
+      calc_price_vars(); document.getElementById('CalculatedPriceTxtFld' + idMixer[10]).innerHTML = round(price_total) + " \u20AC";
+
+      // id mixer
+      var idMixerNew = Array(rand(), rand(), rand(), rand(), rand(), rand(), rand(), rand(), rand(), rand(), rand());
+      $( document.getElementById( 'ViewPurchaseOrderDialog1' + idMixer[0] )                 ).attr('id', 'ViewPurchaseOrderDialog1' + idMixerNew[0]);
+      $( document.getElementById( 'ViewPurchaseOrderDialog2' + idMixer[1] )                 ).attr('id', 'ViewPurchaseOrderDialog2' + idMixerNew[1]);
+      $( document.getElementById( 'ViewPurchaseOrderDialog3' + idMixer[2] )                 ).attr('id', 'ViewPurchaseOrderDialog3' + idMixerNew[2]);
+      $( document.getElementById( 'ViewPurchaseOrderDialog4' + idMixer[3] )                 ).attr('id', 'ViewPurchaseOrderDialog4' + idMixerNew[3]);
+      $( document.getElementById( 'ViewPurchaseOrderDialogSelectedVehicle' + idMixer[4] )   ).attr('id', 'ViewPurchaseOrderDialogSelectedVehicle' + idMixerNew[4]);
+      $( document.getElementById( 'ViewPurchaseOrderDialogSelectedSpecial' + idMixer[5] )   ).attr('id', 'ViewPurchaseOrderDialogSelectedSpecial' + idMixerNew[5]);
+      $( document.getElementById( 'ViewPurchaseOrderDialogFinalPrice' + idMixer[6]      )   ).attr('id', 'ViewPurchaseOrderDialogFinalPrice' + idMixerNew[6]);
+      $( document.getElementById( 'SelectedModelTxtFld' + idMixer[7] )    ).attr('id', 'SelectedModelTxtFld' + idMixerNew[7]);
+      $( document.getElementById( 'SelectedSpecialTxtFld' + idMixer[8] )    ).attr('id', 'SelectedSpecialTxtFld' + idMixerNew[8]);
+      $( document.getElementById( "ViewPurchaseOrderDialog3Table" + idMixer[9]             )    ).attr('id', "ViewPurchaseOrderDialog3Table" + idMixerNew[9]);
+      $( document.getElementById( 'CalculatedPriceTxtFld' + idMixer[10]     )    ).attr('id', 'CalculatedPriceTxtFld' + idMixerNew[10]);
+      idMixer = idMixerNew;
+
+    }
+
+    function rand() {
+      return Math.round(Math.random() * 1000000);
+    }
+    // -->
+  </script>
+
+  <div id="SendPurchaseOrderPanel" title="">
+   <div id="accordion">
+    <h4><a id="SendPurchaseOrderDialogAccordionBaseModelDesc" href="#"></a></h4>
+    <div>
+      <table>
+       <tr>
+        <td class="label"><label name="SendPurchaseOrderDialogBaseModelselectedVehicle"></label></td>
+        <td> &nbsp; </td>
+        <td class="textfield" style="text-align: right"><input id="SendPurchaseOrderDialogBaseModelselectedVehicleOutput" type="text" class="OutputTextPane" readonly /></td>
+       </tr>
+       <tr>
+        <td class="label"><label name="SendPurchaseOrderDialogBaseModelselectVehicPrice"></label></td>
+        <td> &nbsp; </td>
+        <td class="textfield" style="text-align: right"><input id="SendPurchaseOrderDialogBaseModelselectVehicPriceOutput" type="text" class="OutputTextPane" readonly /></td>
+       </tr>
+       <tr>
+        <td class="label"><label name="SendPurchaseOrderDialogBaseModelselectCDiscount"></label></td>
+        <td> &nbsp; </td>
+        <td class="textfield" style="text-align: right"><input id="SendPurchaseOrderDialogBaseModelselectCDiscountOutput" type="text" class="OutputTextPane" readonly /></td>
+       </tr>
+       <tr>
+        <td class="label"><label name="SendPurchaseOrderDialogBaseModelselecTotalPrice"></label></td>
+        <td> &nbsp; </td>
+        <td class="textfield" style="text-align: right"><input id="SendPurchaseOrderDialogBaseModelselecTotalPriceOutput" type="text" class="OutputTextPane" readonly /></td>
+       </tr>
+      </table>
+    </div>
+    <h4><a id="SendPurchaseOrderDialogAccordionSpecialMoDesc" href="#"></a></h4>
+    <div>
+      <table>
+       <tr>
+        <td class="label"><label name="SendPurchaseOrderDialogAccordionSpecialMoDescName"></label></td>
+        <td> &nbsp; </td>
+        <td class="textfield" style="text-align: right"><input id="SendPurchaseOrderDialogAccordionSpecialMoDescNameOutput" type="text" class="OutputTextPane" readonly /></td>
+       </tr>
+       <tr>
+        <td class="label"><label name="SendPurchaseOrderDialogAccordionSpecialMoDescPrice"></label></td>
+        <td> &nbsp; </td>
+        <td class="textfield" style="text-align: right"><input id="SendPurchaseOrderDialogAccordionSpecialMoDescPriceOutput" type="text" class="OutputTextPane" readonly /></td>
+       </tr>
+      </table>
+    </div>
+    <h4><a id="SendPurchaseOrderDialogAccordionAccessoryDesc" href="#"></a></h4>
+    <div>
+      <table class="dataTable" id="SendPurchaseOrderDialogAccessoryOutputTable">
+       <!-- Accessory Table Output -->
+      </table>
+    </div>
+    <h4><a id="SendPurchaseOrderDialogAccordionTotalPriceDesc" href="#"></a></h4>
+    <div>
+      <table>
+       <tr>
+        <td class="label"><label name="SendPurchaseOrderDialogAccordionTotalPriceDescTotal"></label></td>
+        <td> &nbsp; </td>
+        <td class="textfield" style="text-align: right"><input id="SendPurchaseOrderDialogAccordionTotalPriceDescTotalOutput" type="text" class="OutputTextPane" readonly /></td>
+       </tr>
+      </table>
+    </div>
+    <h4><a id="SendPurchaseOrderDialogAccordionContactInDesc" href="#"></a></h4>
+    <div>
+     <form name="SendPurchaseorderDialogForm">
+      <table>
+       <tr>
+        <td class="label"><label name="SendPurchaseorderDialogFormSurname"></label></td>
+        <td> &nbsp; </td>
+        <td class="textfield" style="text-align: right" id="surname"><input id="surname_input" name="mySurname" type="text" value="" /></td>
+       </tr>
+       <tr>
+        <td class="label"><label name="SendPurchaseorderDialogFormFirstName"></label></td>
+        <td> &nbsp; </td>
+        <td class="textfield" style="text-align: right" id="firstname"><input id="firstname_input" name="myFirstname" type="text" value="" /></td>
+       </tr>
+       <tr>
+        <td class="label"><label name="SendPurchaseorderDialogFormAddress_Street"></label></td>
+        <td> &nbsp; </td>
+        <td class="textfield" style="text-align: right" id="address"><input id="address_input" name="myStreet" type="text" value="" /></td>
+       </tr>
+       <tr>
+        <td class="label"><label name="SendPurchaseorderDialogFormZipCode"></label></td>
+        <td> &nbsp; </td>
+        <td class="textfield" style="text-align: right" id="zipcode"><input id="zipcode_input" name="myZip" type="text" value="" /></td>
+       </tr>
+       <tr>
+        <td class="label"><label name="SendPurchaseorderDialogFormCity"></label></td>
+        <td> &nbsp; </td>
+        <td class="textfield" style="text-align: right" id="city"><input id="city_input" name="myCity" type="text" value="" /></td>
+       </tr>
+       <tr>
+        <td class="label"><label name="SendPurchaseorderDialogFormCountry"></label></td>
+        <td> &nbsp; </td>
+        <td class="textfield" style="text-align: right" id="country"><input id="country_input" name="myCountry" type="text" value="" /></td>
+       </tr>
+       <tr>
+        <td class="label"><label name="SendPurchaseorderDialogFormNumber"></label></td>
+        <td> &nbsp; </td>
+        <td class="textfield" style="text-align: right" id="number"><input id="number_input" name="myNumber" type="text" value="" /></td>
+       </tr>
+       <tr>
+        <td class="label"><label name="SendPurchaseorderDialogFormAddress_Mail"></label></td>
+        <td> &nbsp; </td>
+        <td class="textfield" style="text-align: right" id="address"><input id="address_input" name="myMail" type="text" value="" /></td>
+       </tr>
+      </table>
+     </form>
+    </div>
+   </div>
+  </div>
+  <script type="text/javascript">
+    // <!--
+
+    //workaround due to getElementsByName bug in IE
+    function assignLabelText(labelname, id) {
+        var spanList = document.getElementsByTagName('label'); // If all the elements are the same type of tag, enter it here (e.g.: SPAN)
+        for(var i = 0; i < spanList.length; i++) {
+            if(spanList[i].getAttribute('name') == labelname) {
+                spanList[i].innerHTML = getLanguageStringbyIdStr(id);
+            }
+        }
+    }
+
+      document.getElementById('SendPurchaseOrderPanel').title = getLanguageStringbyIdStr("SendPurchaseOrderDialog");
+      // Accordion Names
+      document.getElementById('SendPurchaseOrderDialogAccordionBaseModelDesc').innerHTML = getLanguageStringbyIdStr("SendPurchaseOrderDialogBasePrice");
+      document.getElementById('SendPurchaseOrderDialogAccordionSpecialMoDesc').innerHTML = getLanguageStringbyIdStr("SendPurchaseOrderDialogModelName");
+      document.getElementById('SendPurchaseOrderDialogAccordionAccessoryDesc').innerHTML = getLanguageStringbyIdStr("SendPurchaseOrderDialogAccessory");
+      document.getElementById('SendPurchaseOrderDialogAccordionTotalPriceDesc').innerHTML = getLanguageStringbyIdStr("SendPurchaseOrderDialogTotalPrice");
+      document.getElementById('SendPurchaseOrderDialogAccordionContactInDesc').innerHTML = getLanguageStringbyIdStr("SendPurchaseOrderDialogAddressAc");
+      // Accordion 1
+
+      assignLabelText('SendPurchaseOrderDialogBaseModelselectedVehicle', 'SendPurchaseOrderDialogBasePriceSelecVehicle')
+      assignLabelText('SendPurchaseOrderDialogBaseModelselectVehicPrice',"SendPurchaseOrderDialogBasePriceVehiclePrices");
+      assignLabelText('SendPurchaseOrderDialogBaseModelselectCDiscount',"SendPurchaseOrderDialogBasePriceVehicleDisco");
+      assignLabelText('SendPurchaseOrderDialogBaseModelselecTotalPrice',"SendPurchaseOrderDialogBasePriceTotalVePrice");
+      // Accordion 2
+      assignLabelText('SendPurchaseOrderDialogAccordionSpecialMoDescName',"SendPurchaseOrderDialogSpecialModelModelName");
+      assignLabelText('SendPurchaseOrderDialogAccordionSpecialMoDescPrice',"SendPurchaseOrderDialogSpecialModelModelPrice");
+      // Accordion 3
+       /* nothing */
+      // Accordion 4
+      assignLabelText('SendPurchaseOrderDialogAccordionTotalPriceDescTotal',"SendPurchaseOrderDialogAccordionTotalPriceDescTotal");
+      // Accordion 5
+      assignLabelText('SendPurchaseorderDialogFormSurname',"SendPurchaseOrderDialogContactSureName");
+      assignLabelText('SendPurchaseorderDialogFormFirstName',"SendPurchaseOrderDialogContactFirstName");
+      assignLabelText('SendPurchaseorderDialogFormAddress_Street',"SendPurchaseOrderDialogContactStreet");
+      assignLabelText('SendPurchaseorderDialogFormZipCode',"SendPurchaseOrderDialogContactZIP");
+      assignLabelText('SendPurchaseorderDialogFormCity',"SendPurchaseOrderDialogContactCity");
+      assignLabelText('SendPurchaseorderDialogFormCountry',"SendPurchaseOrderDialogContactCountry");
+      assignLabelText('SendPurchaseorderDialogFormNumber',"SendPurchaseOrderDialogContactNumber");
+      assignLabelText('SendPurchaseorderDialogFormAddress_Mail',"SendPurchaseOrderDialogContactMail");
+
+      function initSendPurchaseOrderDialog() {
+        calc_price_vars();
+        // Accordion 1 init
+        if(selectedvehicle != 0) {
+            document.getElementById('SendPurchaseOrderDialogBaseModelselectedVehicleOutput').value = vehicleNames[selectedvehicle - 1];
+            document.getElementById('SendPurchaseOrderDialogBaseModelselectVehicPriceOutput').value = round(vehicle_price[selectedvehicle - 1]) + " \u20AC";
+            document.getElementById('SendPurchaseOrderDialogBaseModelselectCDiscountOutput').value = thecar_discount + " %";
+            document.getElementById('SendPurchaseOrderDialogBaseModelselecTotalPriceOutput').value = round(price_vehicle / 100 * (100 - thecar_discount)) + " \u20AC";
+        } else {
+            document.getElementById('SendPurchaseOrderDialogBaseModelselectedVehicleOutput').value = getLanguageStringbyIdStr("SendPurchaseOrderDialogBasePriceErrorVehicle");
+            document.getElementById('SendPurchaseOrderDialogBaseModelselectVehicPriceOutput').value = "0.00 \u20AC";
+            document.getElementById('SendPurchaseOrderDialogBaseModelselectCDiscountOutput').value = thecar_discount + " %";
+            document.getElementById('SendPurchaseOrderDialogBaseModelselecTotalPriceOutput').value = "0.00 \u20AC";
+        }
+        // Accordion 2 init
+        document.getElementById('SendPurchaseOrderDialogAccordionSpecialMoDescNameOutput').value = vehicle_specialmodel_name[selectedspecial];
+        document.getElementById('SendPurchaseOrderDialogAccordionSpecialMoDescPriceOutput').value = round(price_special) + " \u20AC";
+        // Accordion 3 init
+        var tbl = document.getElementById('SendPurchaseOrderDialogAccessoryOutputTable');
+        while(tbl.childNodes.length != 0) {
+            tbl.removeChild(tbl.firstChild);
+        }
+        var row = 0;
+        var tr = tbl.insertRow(row++);
+        tr.className += " dataRow";
+        tr.className += " headerRow";
+        var td_1 = document.createElement("td");
+        td_1.className += " dataCell";
+        td_1.className += " headerCell";
+        var td_2 = document.createElement("td");
+        td_2.className += " dataCell";
+        td_2.className += " headerCell";
+        var td_3 = document.createElement("td");
+        td_3.className += " dataCell";
+        td_3.className += " headerCell";
+        td_1.appendChild(document.createTextNode(getLanguageStringbyIdStr("SendPurchaseOrderDialogAccessoryHeaderSelected") + " "));
+        td_3.appendChild(document.createTextNode(getLanguageStringbyIdStr("SendPurchaseOrderDialogAccessoryHeaderPrice") + " "));
+        td_1.style.textAlign = "left";
+        td_3.style.textAlign = "right";
+        tr.appendChild(td_1);
+        tr.appendChild(td_2);
+        tr.appendChild(td_3);
+        // output all selected accessory
+        var hasoutput = false;
+        for(var i = 0; i < accessory_name.length; i++) {
+            if(selectedaccesso.indexOf("xS" + i + "x") != -1) {
+                hasoutput = true;
+                tr = tbl.insertRow(row++);
+                tr.className += " dataRow";
+                td_1 = document.createElement("td");
+                td_1.className += " dataCell";
+                td_2 = document.createElement("td");
+                td_2.className += " dataCell";
+                td_3 = document.createElement("td");
+                td_3.className += " dataCell";
+                td_1.appendChild(document.createTextNode(accessory_name[i] + " "));
+                td_3.appendChild(document.createTextNode(round(accessory_price[i]) + " \u20AC"));
+                td_1.className += " label";
+                td_3.className += " textarea";
+                td_1.style.textAlign = "left";
+                td_3.style.textAlign = "right";
+                tr.appendChild(td_1);
+                tr.appendChild(td_2);
+                tr.appendChild(td_3);
+            }
+        }
+        if(!hasoutput) {
+            tr = tbl.insertRow(row++);
+            tr.className += " dataRow";
+            td_1 = document.createElement("td");
+            td_1.className += " dataCell";
+            td_2 = document.createElement("td");
+            td_2.className += " dataCell";
+            td_3 = document.createElement("td");
+            td_3.className += " dataCell";
+            td_1.appendChild(document.createTextNode(getLanguageStringbyIdStr("SendPurchaseOrderDialogAccessoryNoSelectedAccesso")));
+            td_3.appendChild(document.createTextNode(round(0) + " \u20AC"));
+            td_1.style.textAlign = "left";
+            td_3.style.textAlign = "right";
+            tr.appendChild(td_1);
+            tr.appendChild(td_2);
+            tr.appendChild(td_3);
+        }
+        // end output all selected accessory
+        tr = tbl.insertRow(row++);
+        tr.className += " dataRow";
+        td_1 = document.createElement("td");
+        td_1.className += " dataCell";
+        td_2 = document.createElement("td");
+        td_2.className += " dataCell";
+        td_3 = document.createElement("td");
+        td_3.className += " dataCell";
+        td_1.appendChild(document.createTextNode(getLanguageStringbyIdStr("SendPurchaseOrderDialogAccessoryDiscount") + " "));
+        td_3.appendChild(document.createTextNode(extra_discount + " %"));
+        td_1.style.textAlign = "left";
+        td_3.style.textAlign = "right";
+        tr.appendChild(td_1);
+        tr.appendChild(td_2);
+        tr.appendChild(td_3);
+        tr = tbl.insertRow(row++);
+        tr.className += " dataRow";
+        td_1 = document.createElement("td");
+        td_1.className += " dataCell";
+        td_2 = document.createElement("td");
+        td_2.className += " dataCell";
+        td_3 = document.createElement("td");
+        td_3.className += " dataCell";
+        td_1.appendChild(document.createTextNode(getLanguageStringbyIdStr("SendPurchaseOrderDialogAccessoryTotal") + " "));
+        td_3.appendChild(document.createTextNode(round(price_extra / 100 * (100 - extra_discount)) + " \u20AC"));
+        td_1.style.textAlign = "left";
+        td_3.style.textAlign = "right";
+        tr.appendChild(td_1);
+        tr.appendChild(td_2);
+        tr.appendChild(td_3);
+        // Accordion 4 init
+        document.getElementById('SendPurchaseOrderDialogAccordionTotalPriceDescTotalOutput').value = round(price_total) + " \u20AC";
+        // Accordion 5 init
+         /* nothing to init */
+      }
+
+      function order_the_car() {
+        var form = document.SendPurchaseorderDialogForm;
+        if(form.mySurname.value.length < 1) {
+            alert(getLanguageStringbyIdStr("SendPurchaseOrderDialogMissingInput"));
+            return;
+        } else if(form.myFirstname.value.length < 1) {
+            alert(getLanguageStringbyIdStr("SendPurchaseOrderDialogMissingInput"));
+            return;
+        } else if(form.myStreet.value.length < 1) {
+            alert(getLanguageStringbyIdStr("SendPurchaseOrderDialogMissingInput"));
+            return;
+        } else if(form.myZip.value.length < 1) {
+            alert(getLanguageStringbyIdStr("SendPurchaseOrderDialogMissingInput"));
+            return;
+        } else if(form.myCity.value.length < 1) {
+            alert(getLanguageStringbyIdStr("SendPurchaseOrderDialogMissingInput"));
+            return;
+        } else if(form.myCountry.value.length < 1) {
+            alert(getLanguageStringbyIdStr("SendPurchaseOrderDialogMissingInput"));
+            return;
+        } else if(form.myNumber.value.length < 1) {
+            alert(getLanguageStringbyIdStr("SendPurchaseOrderDialogMissingInput"));
+            return;
+        } else if(form.myMail.value.length < 1) {
+            alert(getLanguageStringbyIdStr("SendPurchaseOrderDialogMissingInput"));
+            return;
+        }
+        if(loadTestVersion) {
+            window.setTimeout("$(function() { $( \"SendPurchaseOrderPanel\" ).dialog( 'close' ); window.location = \"confirm\" + setlanguage + \".pdf\" });", Math.random() * 1000 + 500);
+        } else {
+            $(function() { $( "SendPurchaseOrderPanel" ).dialog( 'close' ); window.location = "confirm" + setlanguage + ".pdf" });
+        }
+      }
+    // -->
+  </script>
+  <!-- }}} -->
+
+  <!-- {{{ Dialogs/Error-Messages -->
+  <div id="InfoPanel" title="Info">
+   <div style="clear: right; float: left; padding-right: 5px; margin-right: 5px;">
+    <br/>
+    <img class="label_icon" id="InfoIcon" src="include/carConfig.png" style="clear: both;" />
+    <br/>
+    <br/>
+    <br/>
+    <br/>
+   </div>
+   <div style="">
+    <span class="label" style="font: normal bold 18px Times;">
+     CarConfiguratorWeb Ver 1.1<br/><br/>
+     Copyright&copy; 2012 - 2020<br/>
+     Quality First Software GmbH<br/>
+     based on C++ implementation of Imbus AG<br/>
+    </span>
+   </div>
+  </div>
+  <script type="text/javascript">
+    // <!--
+        if(newVersion) {
+            document.getElementById('InfoIcon').src = "include/carConfigNew.png";
+        }
+    // -->
+  </script>
+
+  <div id="ClosingErrorDialog" title="Error">
+   <font id="ClosingErrorDialogFont" style="font: normal bold 18px Times;">
+   </font>
+  </div>
+  <script type="text/javascript">
+    // <!--
+      document.getElementById('ClosingErrorDialogFont').innerHTML = getLanguageStringbyIdStr("CloseError");
+    // -->
+  </script>
+
+  <div id="IlligalInputError" title="Error">
+   <font id="IlligalInputDialogFont" style="font: normal bold 18px Times;">
+   </font>
+  </div>
+  <script type="text/javascript">
+    // <!--
+      document.getElementById('IlligalInputDialogFont').innerHTML = getLanguageStringbyIdStr("ErrorByInput");
+    // -->
+  </script>
+
+  <div id="IlligalInput" title="Error">
+   <font id="IlligalDiscountInputDialogFont" style="font: normal bold 18px Times;">
+   </font>
+  </div>
+  <script type="text/javascript">
+    // <!--
+      document.getElementById('IlligalDiscountInputDialogFont').innerHTML = getLanguageStringbyIdStr("DiscountInputError");
+    // -->
+  </script>
+  <!-- }}} End Popup dialogs used in this page! -->
+  <!-- }}} -->
+  <br/>
+  <!-- {{{ Main HTML Content (Menubar, Accordion, CalculatorPane) -->
+   <center>                                                                              <!-- All Elements to the center -->
+   <div class="borderforallstdelements" ondblclick="javascript: closeAllMenuBars();">
+    <!-- {{{ menubar -->
+     <div style="width: 700px">
+     <ul id="MenuBar">
+      <li class="menuitem" id="mFile"><a id="mFile_menu" href="#" onClick="javascript: mFileClick();" onmousemove="javascript: mFileMove();"><script type="text/javascript"> document.write(getLanguageStringbyIdStr("mFile")); </script></a>
+       <ul id="MenuBar_Element1_element">
+        <li class="menusubitem" id="miReset"><a id="miReset_menu" href="#" onClick="javascript: miResetClick();"><script type="text/javascript"> document.write(getLanguageStringbyIdStr("miReset")); </script></a></li>
+        <li class="menusubitem" id="miExit"><a id="miExit_menu" href="#" onClick="javascript: miExitClick()"><script type="text/javascript"> document.write(getLanguageStringbyIdStr("miExit")); </script></a></li>
+       </ul>
+      </li>
+      <li class="menuitem" id="mOptions"><a id="mOptions_menu" href="#" onClick="javascript: mOptionsClick();" onmousemove="javascript: mOptionsMove();"><script type="text/javascript"> document.write(getLanguageStringbyIdStr("mOptions")); </script></a>
+       <ul id="MenuBar_Element2_element">
+        <li class="menusubitem" id="miVehicles"><a id="miVehicles_menu" href="#" onClick="javascript: miVehiclesClick();"><script type="text/javascript"> document.write(getLanguageStringbyIdStr("miVehicles")); </script></a></li>
+        <li class="menusubitem" id="miSpecials"><a id="miSpecials_menu" href="#" onClick="javascript: miSpecialsClick();"><script type="text/javascript"> document.write(getLanguageStringbyIdStr("miSpecials")); </script></a></li>
+        <li class="menusubitem" id="miAccessories"><a id="miAccessories_menu" href="#" onClick="javascript: miAccessoriesClick();"><script type="text/javascript"> document.write(getLanguageStringbyIdStr("miAccessories")); </script></a></li>
+       </ul>
+      </li>
+      <li class="menuitem" id="mOrder"><a id="mOrder_menu" href="#" onClick="javascript: mOrderClick();" onmousemove="javascript: mOrderMove();"><script type="text/javascript"> document.write(getLanguageStringbyIdStr("mOrder")); </script></a>
+       <ul id="MenuBar_Element3_element">
+        <li class="menusubitem" id="miViewOrder"><a id="miViewOrder_menu" href="#" onClick="javascript: miViewOrderClick();"><script type="text/javascript"> document.write(getLanguageStringbyIdStr("miViewOrder")); </script></a></li>
+        <li class="menusubitem" id="miSendOrder"><a id="miSendOrder_menu" href="#" onClick="javascript: miSendOrderClick();"><script type="text/javascript"> document.write(getLanguageStringbyIdStr("miSendOrder")); </script></a></li>
+       </ul>
+      </li>
+      <li class="menuitem" id="mHelp"><a id="mHelp_menu" href="#" onClick="javascript: mHelpClick();" onmousemove="javascript: mHelpMove();"><script type="text/javascript"> document.write(getLanguageStringbyIdStr("mHelp")); </script></a>
+       <ul id="MenuBar_Element4_element">
+        <li class="menusubitem" id="miInfo"><a id="miInfo_menu" href="#" onClick="javascript: miInfoClick();"><script type="text/javascript"> document.write(getLanguageStringbyIdStr("miInfo")); </script></a></li>
+        <li class="menusubitem checkable-menu-item" id="miBuggy"><a id="miBuggy_menu" href="#" onClick="javascript: miBuggyClick();"><script type="text/javascript"> document.write(((buggyVersion)?"&#9143; ":"") + getLanguageStringbyIdStr("miBuggy")); </script></a></li>
+        <li class="menusubitem checkable-menu-item" id="miNewVersion"><a id="miNewVersion_menu" href="#" onClick="javascript: miNewVersionClick();"><script type="text/javascript"> document.write(((newVersion)?"&#9143; ":"") + getLanguageStringbyIdStr("miNewVersion")); </script></a></li>
+        <li class="menusubitem checkable-menu-item" id="miLoadtest"><a id="miLoadtest_menu" href="#" onClick="javascript: miLoadtestClick();"><script type="text/javascript"> document.write(((loadTestVersion)?"&#9143; ":"") + getLanguageStringbyIdStr("miLoadtest")); </script></a></li>
+       </ul>
+      </li>
+     </ul>
+     </div>
+    <!-- }}} end of menubar -->
+    <!-- {{{ Tabbar -->
+    <div style="width: 700px; margin-top: 7px;">
+        <div id="TabbedPane" onClick="javascript: closeAllMenuBars();">
+            <!-- {{{ TabbedPaneHeader -->
+            <ul id="Tabs">
+                <!-- all 3 tabs in the wanted language -->
+                <li class="TabItem"><a id="TabbedPaneVehicle" href="#VehicleTablePanel" onClick="javascript: closeAllMenuBars();"><script type="text/javascript"> document.write(getLanguageStringbyIdStr("TabVehicleName")); </script></a></li>
+                <li class="TabItem"><a id="TabbedPaneSpecialModel" href="#SpecialsPanel" onClick="javascript: closeAllMenuBars();"><script type="text/javascript"> document.write(getLanguageStringbyIdStr("TabSpecialsName")); </script></a></li>
+                <li class="TabItem"><a id="TabbedPaneAccessory" href="#AccessoryTablePanel" onClick="javascript: closeAllMenuBars();"><script type="text/javascript"> document.write(getLanguageStringbyIdStr("TabAccessoryName")); </script></a></li>
+            </ul>
+            <!-- }}} -->
+            <!-- {{{ tab 1 starts here. It's for selecting the car you want -->
+            <div id="VehicleTablePanel" onClick="javascript: closeAllMenuBars();">
+                <table class="dataTable" id="VehicleTable">               <!-- in this table there will be printed by JS the all avaiable vehicles -->
+                </table>
+                <script type="text/javascript">
+                    // sorting functions
+                    function sortingObj(name, id, price, selected) {
+                      this.name = name; this.id = id; this.price = price; this.selected = selected;
+                    }
+                    function sortVehicleNames() {
+                      var toSort = [];
+                      for(var i = 0; i < vehicleNames.length; i++) {
+                        toSort.push(new sortingObj(vehicleNames[i], vehicleID[i], vehicle_price[i], i == selectedvehicle - 1));
+                      }
+
+                      // "min" sort
+                      for(var i = 0; i < toSort.length; i++) {
+                        var min = i;
+                        for(var j = i + 1; j < toSort.length; j++) {
+                          if(toSort[min].name > toSort[j].name) {
+                            min = j;
+                          }
+                        }
+                        var minE = toSort[min];
+                        var swapE = toSort[i];
+                        toSort[i] = minE;
+                        toSort[min] = swapE;
+                      }
+
+                      for(var i = 0; i < toSort.length; i++) {
+                        vehicleNames[i] = toSort[i].name;
+                        vehicleID[i] = toSort[i].id;
+                        vehicle_price[i] = toSort[i].price;
+                        if(toSort[i].selected) selectedvehicle = i + 1;
+                      }
+                      updateAllPanels();
+                    }
+                    function sortVehicleID() {
+                      var toSort = [];
+                      for(var i = 0; i < vehicleNames.length; i++)
+                        toSort.push(new sortingObj(vehicleNames[i], vehicleID[i], vehicle_price[i], i == selectedvehicle - 1));
+
+                      // "min" sort
+                      for(var i = 0; i < toSort.length; i++) {
+                        var min = i;
+                        for(var j = i + 1; j < toSort.length; j++) {
+                          if(toSort[min].id > toSort[j].id)
+                            min = j;
+                        }
+                        var minE = toSort[min];
+                        var swapE = toSort[i];
+                        toSort[i] = minE;
+                        toSort[min] = swapE;
+                      }
+
+                      for(var i = 0; i < toSort.length; i++) {
+                        vehicleNames[i] = toSort[i].name;
+                        vehicleID[i] = toSort[i].id;
+                        vehicle_price[i] = toSort[i].price;
+                        if(toSort[i].selected) selectedvehicle = i + 1;
+                      }
+                      updateAllPanels();
+                    }
+                    function sortVehicle_price() {
+                      var toSort = [];
+                      for(var i = 0; i < vehicleNames.length; i++)
+                        toSort.push(new sortingObj(vehicleNames[i], vehicleID[i], vehicle_price[i], i == selectedvehicle - 1));
+
+                      // "min" sort
+                      for(var i = 0; i < toSort.length; i++) {
+                        var min = i;
+                        for(var j = i + 1; j < toSort.length; j++) {
+                          if(toSort[min].price > toSort[j].price)
+                            min = j;
+                        }
+                        var minE = toSort[min];
+                        var swapE = toSort[i];
+                        toSort[i] = minE;
+                        toSort[min] = swapE;
+                      }
+
+                      for(var i = 0; i < toSort.length; i++) {
+                        vehicleNames[i] = toSort[i].name;
+                        vehicleID[i] = toSort[i].id;
+                        vehicle_price[i] = toSort[i].price;
+                        if(toSort[i].selected) selectedvehicle = i + 1;
+                      }
+                      updateAllPanels();
+                    }
+
+                    function printVehicleTable() {
+                        // delete all existing elements
+                        while(document.getElementById('VehicleTable').childNodes.length != 0)
+                            document.getElementById('VehicleTable').removeChild(document.getElementById('VehicleTable').firstChild);
+                        // insert
+                        var row = 0;
+                        if(! newVersion) {
+                            // insert tableheader
+                            var tr = document.getElementById("VehicleTable").insertRow(row++);
+                            tr.className += " dataRow";
+                            tr.className += " headerRow";
+                            var td_1 = document.createElement("td");
+                            td_1.className += " dataCell";
+                            td_1.className += " headerCell";
+                            td_1.appendChild(document.createTextNode(getLanguageStringbyIdStr("HeaderVehicle") + " "));
+                            td_1.style.textAlign = "left";
+                            td_1.onclick = sortVehicleNames; // ... sorting ...
+                            var td_2 = document.createElement("td");
+                            td_2.className += " dataCell";
+                            td_2.className += " headerCell";
+                            td_2.appendChild(document.createTextNode(" " + getLanguageStringbyIdStr("HeaderPrices")));
+                            td_2.style.textAlign = "right";
+                            td_2.onclick = sortVehicle_price; // ... sorting ...
+                            // ID
+                              //td_1.setAttribute('id', 'VehicleTableName');
+                              //td_2.setAttribute('id', 'VehicleTablePrice');
+                            // ID END
+                            tr.appendChild(td_1);
+                            tr.appendChild(td_2);
+                            tr.style.backgroundColor = "#D0D0D0";
+                            // insert tablebody
+                            for(var i = 0; i < vehicleNames.length; i++) {
+                                var tr = document.getElementById("VehicleTable").insertRow(row++);
+                                tr.className += " dataRow";
+                                var td_1 = document.createElement("td");
+                                td_1.className += " dataCell";
+                                td_1.style.textAlign = "left";
+                                td_1.style.cursor = "pointer";
+                                td_1.appendChild(document.createTextNode(vehicleNames[i] + " "));
+                                var td_2 = document.createElement("td");
+                                td_2.className += " dataCell";
+                                td_2.appendChild(document.createTextNode(" " + round(vehicle_price[i]) + " \u20AC"));
+                                td_2.style.textAlign = "right";
+                                td_2.style.cursor = "pointer";
+                                // ID
+                                  //td_1.setAttribute('id', 'VehicleTableName' + vehicleNames[i].replace(/\s/, ""));
+                                  //td_2.setAttribute('id', 'VehicleTablePrice' + vehicleNames[i].replace(/\s/, ""));
+                                // ID END
+                                tr.appendChild(td_1);
+                                tr.appendChild(td_2);
+                                if(i + 1 == selectedvehicle)
+                                    tr.style.backgroundColor = "#00BFFF";
+                                else if(i % 2 == 0)
+                                    tr.style.backgroundColor = "#e6e6e6";
+                                else
+                                    tr.style.backgroundColor = "#F2F2F2";
+                                tr.onclick = function() {
+                                    var i = 0;
+                                    for(var node = this.parentNode.firstChild; node != this; node = node.nextSibling) ++i;
+                                    selectedvehicle = i;
+                                    printVehicleTable();
+                                    updateCalculatorPane();
+                                };
+                            }
+                        } else {
+                            // insert tableheader
+                            var tr = document.getElementById("VehicleTable").insertRow(row++);
+                            tr.className += " dataRow";
+                            var td_1 = document.createElement("td");
+                            td_1.className += " dataCell";
+                            td_1.className += " headerCell";
+                            td_1.appendChild(document.createTextNode(getLanguageStringbyIdStr("HeaderVehicle") + " "));
+                            td_1.style.textAlign = "left";
+                            td_1.onclick = sortVehicleNames; // ... sorting ...
+                            var td_2 = document.createElement("td");
+                            td_2.className += " dataCell";
+                            td_2.className += " headerCell";
+                            td_2.appendChild(document.createTextNode("ID"));
+                            td_2.style.textAlign = "left";
+                            td_2.onclick = sortVehicleID; // ... sorting ...
+                            var td_3 = document.createElement("td");
+                            td_3.className += " dataCell";
+                            td_3.appendChild(document.createTextNode(" " + getLanguageStringbyIdStr("HeaderPrices")));
+                            td_3.style.textAlign = "right";
+                            td_3.onclick = sortVehicle_price; // ... sorting ...
+                            // ID
+                              //td_1.setAttribute('id', 'VehicleTableName');
+                              //td_2.setAttribute('id', 'VehicleTableId');
+                              //td_3.setAttribute('id', 'VehicleTablePrice');
+                            // ID END
+                            tr.appendChild(td_1);
+                            tr.appendChild(td_2);
+                            tr.appendChild(td_3);
+                            tr.style.backgroundColor = "#D0D0D0";
+                            // insert tablebody
+                            for(var i = 0; i < vehicleNames.length; i++) {
+                                var tr = document.getElementById("VehicleTable").insertRow(row++);
+                                tr.className += " dataRow";
+                                var td_1 = document.createElement("td");
+                                td_1.className += " dataCell";
+                                td_1.style.textAlign = "left";
+                                td_1.style.cursor = "pointer";
+                                td_1.appendChild(document.createTextNode(vehicleNames[i] + " "));
+                                var td_2 = document.createElement("td");
+                                td_2.className += " dataCell";
+                                td_2.style.textAlign = "left";
+                                td_2.style.cursor = "pointer";
+                                td_2.appendChild(document.createTextNode(vehicleID[i]));
+                                var td_3 = document.createElement("td");
+                                td_3.className += " dataCell";
+                                td_3.appendChild(document.createTextNode(" " + round(vehicle_price[i]) + " \u20AC"));
+                                td_3.style.textAlign = "right";
+                                td_3.style.cursor = "pointer";
+                                // ID
+                                  //td_1.setAttribute('id', 'VehicleTableName' + vehicleNames[i].replace(/\s/, ""));
+                                  //td_2.setAttribute('id', 'VehicleTableId' + vehicleNames[i].replace(/\s/, ""));
+                                  //td_3.setAttribute('id', 'VehicleTablePrice' + vehicleNames[i].replace(/\s/, ""));
+                                // ID END
+                                tr.appendChild(td_1);
+                                tr.appendChild(td_2);
+                                tr.appendChild(td_3);
+                                if(i + 1 == selectedvehicle)
+                                    tr.style.backgroundColor = "#00BFFF";
+                                else if(i % 2 == 0)
+                                    tr.style.backgroundColor = "#e6e6e6";
+                                else
+                                    tr.style.backgroundColor = "#F2F2F2";
+                                tr.onclick = function() {
+                                    var i = 0;
+                                    for(var node = this.parentNode.firstChild; node != this; node = node.nextSibling) ++i;
+                                    selectedvehicle = i;
+                                    printVehicleTable();
+                                    updateCalculatorPane();
+                                };
+                            }
+                        }
+                    }
+
+                    printVehicleTable();                                        // startup
+                </script>
+            </div>
+            <!-- }}} -->
+            <!-- {{{ then there is tab 2 for selecting the special model of the car -->
+            <div id="SpecialsPanel" onClick="javascript: closeAllMenuBars();">
+                <select id="SpecialsCombo" style="width: 350px; border-color: #606060;" onChange="javascript: change_special();">
+                </select>
+                <br/>
+                <textarea id="SpecialsArea" style="width: 350px; height: 150px; border-color: #606060; outline-color: #606060;" readonly>
+                </textarea>
+                <script type="text/javascript">
+                    function SpecialComboUpdate() {
+                        // clear combo
+                        while(document.getElementById('SpecialsCombo').options[0] != null)
+                            document.getElementById('SpecialsCombo').options[0] = null;
+                        // put everything in the combo
+                        for(var i = 0; i < vehicle_specialmodel_name.length; i++) {
+                            document.getElementById('SpecialsCombo').options[document.getElementById('SpecialsCombo').options.length] = new Option(vehicle_specialmodel_name[i]);
+                        }
+                    }
+
+                    function change_special() {
+                        selectedspecial = document.getElementById('SpecialsCombo').selectedIndex;
+                        document.getElementById('SpecialsArea').value = vehicle_specialmodel_desc[selectedspecial];
+                        updateCalculatorPane();
+                    }
+
+                    document.getElementById('SpecialsArea').value = vehicle_specialmodel_desc[0];   // startup
+                    SpecialComboUpdate();                                                           // startup
+                </script>
+            </div>
+            <!-- }}} -->
+            <!-- {{{ tab 3 is for selecting the accessory -->
+            <div id="AccessoryTablePanel" onClick="javascript: closeAllMenuBars();">
+                <form name="accessoryinputform">
+                    <table class="dataTable" id="AccessoryTable">
+                    </table>
+                    <br/><br/>
+                    <input id="AddAccessoryPriceChkbox" type="checkbox" onClick="javascript: updateCalculatorPane();" onChange="javascript: updateCalculatorPane();" checked="checked"/><label for="AddAccessoryPriceChkbox" onClick="javascript: updateCalculatorPane();"><script type="text/javascript">document.write(" " + getLanguageStringbyIdStr("AddAccessoryPriceChkboxValue"));</script></label>
+                </form>
+                <script type="text/javascript">
+                    // sorting
+                    function sortingObjAccessory(name, id, price, selected, special) {
+                      this.name = name; this.id = id; this.price = price; this.selected = selected;
+                      this.special = special; // Array
+                    }
+                    function sortAccesoryNames() {
+                      var toSort = [];
+                      for(var i = 0; i < accessory_name.length; i++) {
+                        var spec = new Array();
+                        for(var j = 0; j < vehicle_specialmodel_extra.length; j++)
+                          if(vehicle_specialmodel_extra[j].indexOf("xS" + i + "x") != -1) spec.push(j);
+                        toSort.push(new sortingObjAccessory(accessory_name[i], accessory_id[i], accessory_price[i], (selectedaccesso.indexOf("xS" + i + "x") != -1), spec));
+                      }
+
+                      // "min" sort
+                      for(var i = 0; i < toSort.length; i++) {
+                        var min = i;
+                        for(var j = i + 1; j < toSort.length; j++) {
+                          if(toSort[min].name > toSort[j].name)
+                            min = j;
+                        }
+                        var minE = toSort[min];
+                        var swapE = toSort[i];
+                        toSort[i] = minE;
+                        toSort[min] = swapE;
+                      }
+
+                      selectedaccesso = "";
+                      for(var i = 0; i < vehicle_specialmodel_extra.length; i++)
+                        vehicle_specialmodel_extra[i] = "";
+
+                      for(var i = 0; i < toSort.length; i++) {
+                        accessory_name[i] = toSort[i].name;
+                        accessory_id[i] = toSort[i].id;
+                        accessory_price[i] = toSort[i].price;
+                        if(toSort[i].selected) selectedaccesso += "xS" + i + "x";
+                        for(var j = 0; j < toSort[i].special.length; j++)
+                          vehicle_specialmodel_extra[toSort[i].special[j]] += "xS" + i + "x";
+                      }
+                      updateAllPanels();
+                    }
+                    function sortAccesoryIDs() {
+                      var toSort = [];
+                      for(var i = 0; i < accessory_name.length; i++) {
+                        var spec = new Array();
+                        for(var j = 0; j < vehicle_specialmodel_extra.length; j++)
+                          if(vehicle_specialmodel_extra[j].indexOf("xS" + i + "x") != -1) spec.push(j);
+                        toSort.push(new sortingObjAccessory(accessory_name[i], accessory_id[i], accessory_price[i], (selectedaccesso.indexOf("xS" + i + "x") != -1), spec));
+                      }
+
+                      // "min" sort
+                      for(var i = 0; i < toSort.length; i++) {
+                        var min = i;
+                        for(var j = i + 1; j < toSort.length; j++) {
+                          if(toSort[min].id > toSort[j].id)
+                            min = j;
+                        }
+                        var minE = toSort[min];
+                        var swapE = toSort[i];
+                        toSort[i] = minE;
+                        toSort[min] = swapE;
+                      }
+
+                      selectedaccesso = "";
+                      for(var i = 0; i < vehicle_specialmodel_extra.length; i++)
+                        vehicle_specialmodel_extra[i] = "";
+
+                      for(var i = 0; i < toSort.length; i++) {
+                        accessory_name[i] = toSort[i].name;
+                        accessory_id[i] = toSort[i].id;
+                        accessory_price[i] = toSort[i].price;
+                        if(toSort[i].selected) selectedaccesso += "xS" + i + "x";
+                        for(var j = 0; j < toSort[i].special.length; j++)
+                          vehicle_specialmodel_extra[toSort[i].special[j]] += "xS" + i + "x";
+                      }
+                      updateAllPanels();
+                    }
+                    function sortAccesoryPrice() {
+                      var toSort = [];
+                      for(var i = 0; i < accessory_name.length; i++) {
+                        var spec = new Array();
+                        for(var j = 0; j < vehicle_specialmodel_extra.length; j++)
+                          if(vehicle_specialmodel_extra[j].indexOf("xS" + i + "x") != -1) spec.push(j);
+                        toSort.push(new sortingObjAccessory(accessory_name[i], accessory_id[i], accessory_price[i], (selectedaccesso.indexOf("xS" + i + "x") != -1), spec));
+                      }
+
+                      // "min" sort
+                      for(var i = 0; i < toSort.length; i++) {
+                        var min = i;
+                        for(var j = i + 1; j < toSort.length; j++) {
+                          if(toSort[min].price > toSort[j].price)
+                            min = j;
+                        }
+                        var minE = toSort[min];
+                        var swapE = toSort[i];
+                        toSort[i] = minE;
+                        toSort[min] = swapE;
+                      }
+
+                      selectedaccesso = "";
+                      for(var i = 0; i < vehicle_specialmodel_extra.length; i++)
+                        vehicle_specialmodel_extra[i] = "";
+
+                      for(var i = 0; i < toSort.length; i++) {
+                        accessory_name[i] = toSort[i].name;
+                        accessory_id[i] = toSort[i].id;
+                        accessory_price[i] = toSort[i].price;
+                        if(toSort[i].selected) selectedaccesso += "xS" + i + "x";
+                        for(var j = 0; j < toSort[i].special.length; j++)
+                          vehicle_specialmodel_extra[toSort[i].special[j]] += "xS" + i + "x";
+                      }
+                      updateAllPanels();
+                    }
+
+                    function AccessoryTableUpdate() {
+                        // delete all existing elements
+                        while(document.getElementById('AccessoryTable').childNodes.length != 0)
+                            document.getElementById('AccessoryTable').removeChild(document.getElementById('AccessoryTable').firstChild);
+                        // insert to table
+                        var row = 0;
+                        var tr = document.getElementById("AccessoryTable").insertRow(row++);
+                        tr.className += " dataRow";
+                        tr.className += " headerRow";
+                        var td_0 = document.createElement("td");
+                        td_0.className += " dataCell";
+                        td_0.className += " headerCell";
+                        td_0.appendChild(document.createTextNode("_"));
+                        var td_1 = document.createElement("td");
+                        td_1.className += " dataCell";
+                        td_1.className += " headerCell";
+                        td_1.appendChild(document.createTextNode(getLanguageStringbyIdStr("AccessoTableDesc") + " "));
+                        td_1.style.textAlign = "left";
+                        var td_2 = document.createElement("td");
+                        td_2.className += " dataCell";
+                        td_2.className += " headerCell";
+                        td_2.appendChild(document.createTextNode(getLanguageStringbyIdStr("AccessoTableID")));
+                        td_2.style.textAlign = "left";
+                        var td_3 = document.createElement("td");
+                        td_3.className += " dataCell";
+                        td_3.className += " headerCell";
+                        td_3.appendChild(document.createTextNode(" " + getLanguageStringbyIdStr("AccessoTablePrice")));
+                        td_3.style.textAlign = "right";
+                        tr.appendChild(td_0);
+                        tr.appendChild(td_1);
+                        tr.appendChild(td_2);
+                        tr.appendChild(td_3);
+                        td_1.onclick = sortAccesoryNames;
+                        td_2.onclick = sortAccesoryIDs;
+                        td_3.onclick = sortAccesoryPrice;
+                        tr.style.backgroundColor = "#D0D0D0";
+                        for(var i = 0; i < accessory_name.length; i++) {
+                            var tr = document.getElementById("AccessoryTable").insertRow(row++);
+                            tr.className += " dataRow";
+                            var td_0 = document.createElement("td");
+                            td_0.className += " dataCell";
+                            var td_1 = document.createElement("td");
+                            td_1.className += " dataCell";
+                            td_1.appendChild(document.createTextNode(accessory_name[i] + " "));
+                            td_1.style.textAlign = "left";
+                            var td_2 = document.createElement("td");
+                            td_2.className += " dataCell";
+                            td_2.appendChild(document.createTextNode("\x20 " + accessory_id[i] + " \x20"));
+                            td_2.style.textAlign = "left";
+                            var td_3 = document.createElement("td");
+                            td_3.className += " dataCell";
+                            td_3.appendChild(document.createTextNode(" " + round(accessory_price[i]) + " \u20AC"));
+                            td_3.style.textAlign = "right";
+                            tr.appendChild(td_0);
+                            tr.appendChild(td_1);
+                            tr.appendChild(td_2);
+                            tr.appendChild(td_3);
+                            tr.style.cursor = "pointer";
+                            if(selectedaccesso.indexOf("xS" + i + "x") != -1) {
+                                //tr.style.backgroundColor = "#33CC55";
+                                td_0.innerHTML = "<input type=\"checkbox\" checked=\"checked\">";
+                            } else {
+                                td_0.innerHTML = "<input type=\"checkbox\">";
+                            }
+                            if(i % 2 == 0) {
+                                tr.style.backgroundColor = "#E6E6E6";
+                            }
+                            else {
+                                tr.style.backgroundColor = "#F2F2F2";
+                            }
+                            var uristring = decodeURI(window.location.search.toUpperCase());
+                            if(uristring.indexOf("&ROWSELECT=1") != -1 || uristring.indexOf("?ROWSELECT=1") != -1)
+                            {
+                                tr.onclick = function() {
+                                    var i = 0;
+                                    for(var node = this.parentNode.firstChild; node.nextSibling != this; node = node.nextSibling) ++i;
+                                    if(selectedaccesso.indexOf("xS" + i + "x") != -1) {
+                                        // delete from list
+                                        var pos = selectedaccesso.indexOf("xS" + i + "x");
+                                        selectedaccesso = selectedaccesso.substr(0, pos) + selectedaccesso.substr(pos + ("xS" + i + "x").length);
+                                    } else {
+                                        // insert in list
+                                        selectedaccesso += "xS" + i + "x"
+                                    }
+                                    AccessoryTableUpdate();
+                                    updateCalculatorPane();
+                                };
+                            } else {
+                                td_0.onclick = function() {
+                                    var i = 0;
+                                    var tbl = this.parentNode.parentNode;
+                                    for(var node = tbl.firstChild; node.nextSibling != this.parentNode; node = node.nextSibling) ++i;
+                                    if(selectedaccesso.indexOf("xS" + i + "x") != -1) {
+                                        // delete from list
+                                        var pos = selectedaccesso.indexOf("xS" + i + "x");
+                                        selectedaccesso = selectedaccesso.substr(0, pos) + selectedaccesso.substr(pos + ("xS" + i + "x").length);
+                                    } else {
+                                        // insert in list
+                                        selectedaccesso += "xS" + i + "x"
+                                    }
+                                    AccessoryTableUpdate();
+                                    updateCalculatorPane();
+                                };
+                            }
+                        }
+                    }
+
+                    AccessoryTableUpdate();
+                </script>
+            </div>
+            <!-- }}} -->
+        </div>
+    </div>
+    <!-- }}} End of tabbar -->
+    <br/>
+    <!-- {{{ Calculation Pane -->
+    <table class="panel" id="CalculatorPanel" onClick="javascript: closeAllMenuBars();">
+     <tr>
+      <td><label for="BasePrice"><script type="text/javascript"> document.write(getLanguageStringbyIdStr("CalcPanelBasePrice")); </script>&nbsp; </label></td>
+      <td class="textfield" style="text-align: right; white-space:nowrap;" id="BasePrice"><span id="BasePrice_input">0.00</span>&nbsp;&euro;</td>
+      <td><label for="DiscountValue">&nbsp;&nbsp;<script type="text/javascript"> document.write(getLanguageStringbyIdStr("CalcPanelDiscount")); </script></label></td>
+      <td class="textfield" style="text-align: right; white-space:nowrap;" id="DiscountValue"><input id="DiscountValue_input" type="text" value="0" style="text-align: right" size="2" maxlength="3" onChange="javascript: DiscountValueChange();" onFocus="this.select()" onkeyup="javascript: DiscountValueChange();"> %</td>
+     </tr>
+     <tr>
+      <td><label for="SpecialPrice"><script type="text/javascript"> document.write(getLanguageStringbyIdStr("CalcPanelPriceModel")); </script>&nbsp; </label></td>
+      <td class="textfield" style="text-align: right; white-space:nowrap;" id="SpecialPrice"><span id="SpecialPrice_input">0.00</span>&nbsp;&euro;</td>
+      <td></td>
+      <td style="text-align: right; white-space:nowrap;"></td>
+     </tr>
+     <tr>
+      <td><label for="AccessoryPrice"><script type="text/javascript"> document.write(getLanguageStringbyIdStr("CalcPanelPriceAccessory")); </script>&nbsp; </label></td>
+      <td class="textfield" style="border-bottom: 1px solid black; text-align: right; white-space:nowrap;" id="AccessoryPrice"><span id="AccessoryPrice_input">0.00</span> &euro;</td>
+      <td><label for="AccessoryDiscountValue">&nbsp;&nbsp;<script type="text/javascript"> document.write(getLanguageStringbyIdStr("CalcPanelDiscount")); </script></label></td>
+      <td class="textfield" style="text-align: right; white-space:nowrap;" id="AccessoryDiscountValue"><span id="AccessoryDiscountValue_input" style="text-align: right;">0</span>&nbsp;%</td>
+     </tr>
+     <tr>
+      <td><label for="CalculatedPrice"><script type="text/javascript"> document.write(getLanguageStringbyIdStr("CalcPanelTotalPrice")); </script>&nbsp; </label></td>
+      <td style="text-align: right; white-space:nowrap;" class="textfield" id="CalculatedPrice"><span id="CalculatedPrice_input">0.00</span>&nbsp;&euro;</td>
+      <td></td>
+      <td><div class="button" style="border-width:1px; border-style:solid; padding:0.1em; text-align: center; white-space:nowrap;" onClick="javascript: GrantDiscount();">-5%</div></td>
+     </tr>
+    </table>
+    <script type="text/javascript">
+        function DiscountValueChange() {
+            thecar_discount = Math.round(document.getElementById('DiscountValue_input').value);
+            if(!isNr(thecar_discount) || thecar_discount > 100 || thecar_discount < 0) {
+                $(function() {
+                    $( '#IlligalInput' ).dialog( 'open' );
+                });
+                thecar_discount = 0;
+                document.getElementById('DiscountValue_input').value = 0;
+            }
+            updateCalculatorPane();
+        }
+
+        function GrantDiscount() {
+            thecar_discount = Math.round(document.getElementById('DiscountValue_input').value);
+            if(!isNr(thecar_discount) || thecar_discount > 100 || thecar_discount < 0) {
+                thecar_discount = 0;
+            }
+
+            discountDiff = 5;
+            if(buggyVersion) {
+              discountDiff = 3;
+            }
+            thecar_discount = thecar_discount + discountDiff
+            if(thecar_discount > 99) {
+              thecar_discount = 99;
+            }
+            document.getElementById('DiscountValue_input').value = thecar_discount;
+            updateCalculatorPane();
+        }
+    </script>
+    <!-- }}} End Calculation Pane -->
+   </div>
+   </center>
+  <!-- }}} -->
+  <!-- {{{ output the docu of carconfigweb, if in the uri the option help is set -->
+    <script type="text/javascript">
+        // <!--
+            if(uristring.indexOf("&HELP=") != -1 || uristring.indexOf("?HELP=") != -1) {
+                Mode = parseInt(uristring.substr(uristring.indexOf("&HELP=") + uristring.indexOf("?HELP=") + 7, 1));
+                if(Mode == 1) {
+                    document.write("<br/>");
+                    document.write("<center>");
+                     document.write("<div class=\"borderforallstdelements\" ondblclick=\"javascript: closeAllMenuBars();\">");
+                      document.write("<table class='dataTable' style='width: 700px; border: 1px solid #606060'>");
+
+                       document.write("<tr class=\"dataRow\" style='border: 1px solid #606060'>");
+                        document.write("<td class=\"dataCell\" style='border-bottom: 1px solid #606060; width: 50px'>");
+                         document.write("<font style='color: #820A1E; font-size: 18px'>English Help:</font>");
+                        document.write("</td>");
+                        document.write("<td class=\"dataCell\" style='border-bottom: 1px solid #606060; width: 50%'>");
+                         document.write("<font style='color: #820A1E; font-size: 18px'>Deutsche Hilfe:</font>");
+                        document.write("</td>");
+                       document.write("</tr>");
+
+                       document.write("<tr class=\"dataRow\">");
+                        document.write("<td class=\"dataCell\">");
+                         document.write("<font style='color: #001E64; font-size: 16px'>Possible Parameters for the URI:</font>");
+                        document.write("</td>");
+                        document.write("<td class=\"dataCell\">");
+                         document.write("<font style='color: #001E64; font-size: 16px'>&Uuml;ber die URI einstellbare Parameter:</font>");
+                        document.write("</td>");
+                       document.write("</tr>");
+
+                       document.write("<tr class=\"dataRow\">");
+                        document.write("<td class=\"dataCell\">");
+                         document.write("language:  lang=de or lang=en");
+                        document.write("</td>");
+                        document.write("<td class=\"dataCell\">");
+                         document.write("Sprache: lang=de oder lang=en");
+                        document.write("</td>");
+                       document.write("</tr>");
+
+                       document.write("<tr class=\"dataRow\">");
+                        document.write("<td class=\"dataCell\">");
+                         document.write("selected tab (at startup) of tabbar:  tab=&lt;Tabindex&gt;");
+                        document.write("</td>");
+                        document.write("<td class=\"dataCell\">");
+                         document.write("vorselektierter Tab in der Tabbar: tab=&lt;Tabnummer&gt;");
+                        document.write("</td>");
+                       document.write("</tr>");
+
+                       document.write("<tr class=\"dataRow\">");
+                        document.write("<td class=\"dataCell\">");
+                         document.write("start Buggy Version:  buggy=1");
+                        document.write("</td>");
+                        document.write("<td class=\"dataCell\">");
+                         document.write("fehlerhafte Version starten: buggy=1");
+                        document.write("</td>");
+                       document.write("</tr>");
+
+                       document.write("<tr class=\"dataRow\">");
+                        document.write("<td class=\"dataCell\">");
+                         document.write("starts CarConfigWeb in the new Version Mode:  newVersion=1");
+                        document.write("</td>");
+                        document.write("<td class=\"dataCell\">");
+                         document.write("CarConfigWeb im neuen Version Modus starten: newVersion=1");
+                        document.write("</td>");
+                       document.write("</tr>");
+
+                       document.write("<tr class=\"dataRow\">");
+                        document.write("<td class=\"dataCell\">");
+                         document.write("activates loadtesting mode:  loadtest=1");
+                        document.write("</td>");
+                        document.write("<td class=\"dataCell\">");
+                         document.write("aktiviert Lasttestmodus: loadtest=1");
+                        document.write("</td>");
+                       document.write("</tr>");
+
+                       document.write("<tr class=\"dataRow\">");
+                        document.write("<td class=\"dataCell\">");
+                         document.write("shows this help:  help=1");
+                        document.write("</td>");
+                        document.write("<td class=\"dataCell\">");
+                         document.write("zeigt diese Hilfe an: help=1");
+                        document.write("</td>");
+                       document.write("</tr>");
+
+                       document.write("<tr class=\"dataRow\">");
+                        document.write("<td class=\"dataCell\">");
+                         document.write("accepts rowselection for accessory table:  rowselect=1");
+                        document.write("</td>");
+                        document.write("<td class=\"dataCell\">");
+                         document.write("akzeptiert Zeilenselektion in Zubeh&ouml;r Tabelle: rowselect=1");
+                        document.write("</td>");
+                       document.write("</tr>");
+
+                        document.write("<tr class=\"dataRow\">");
+                        document.write("<td class=\"dataCell\">");
+                         document.write("User, tester to see everything, user has limited permissions:  user=username");
+                        document.write("</td>");
+                        document.write("<td class=\"dataCell\">");
+                         document.write("Benutzname, tester hat alle Rechte, user nur limitierte: user=username");
+                        document.write("</td>");
+                       document.write("</tr>");
+
+                       document.write("<tr class=\"dataRow\">");
+                        document.write("<td class=\"dataCell\">");
+                         document.write("<font style='color: #001E64; font-size: 16px'>General Information:</font>");
+                        document.write("</td>");
+                        document.write("<td class=\"dataCell\">");
+                         document.write("<font style='color: #001E64; font-size: 16px'>Generelle Hinweise:</font>");
+                        document.write("</td>");
+                       document.write("</tr>");
+
+                       document.write("<tr class=\"dataRow\">");
+                        document.write("<td class=\"dataCell\">");
+                         document.write("It might be, that your browser blocks the execution of file->exit. This Menu-Command tries to close the window.");
+                        document.write("</td>");
+                        document.write("<td class=\"dataCell\">");
+                         document.write("Unter Umst&auml;nden blockiert ihr Browser die Ausf&uuml;hrung von Datei->Beenden. Dieser Men&uuml;befehl versucht das Fenster zu schlie&szlig;en.");
+                        document.write("</td>");
+                       document.write("</tr>");
+
+                      document.write("</table>");
+                     document.write("</div>");
+                    document.write("</center>");
+                }
+            }
+        // -->
+    </script>
+    <!-- }}} -->
+  <!-- {{{ sets the JS-var startup to false used-->
+   <script type="text/javascript">
+    startup = false;
+   </script>
+  <!-- }}} -->
+  <br/>
+ </body>
+</html>

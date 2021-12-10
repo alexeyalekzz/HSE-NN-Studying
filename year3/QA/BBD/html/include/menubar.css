@@ -1,0 +1,80 @@
+/********************************************************************
+ *
+ * $Id: CarConfigurator, v 1.1 2012/03/20 16:01:28
+ *
+ * Copyright (C) 2012 Quality First Software
+ * All rights reserved
+ *
+ * Author: QFS (qfs@qfs.de), Yann Spoeri
+ *******************************************************************/
+  
+ /*
+  * Spezial CSS for the menubar
+  */
+  
+  /*
+   * for all menubar items
+   */
+  
+  #MenuBar * {
+    position: relative;    margin: 0;    padding: 0;    left: 0px;
+    vertical-align: middle;    text-align: center;
+    outline: 0;    z-index: 100;    font-size: 14px;
+  }
+  
+  /*
+   * The menubar contains
+   * ul - "border" for the whole bar
+   * li - MenuItems like file...
+   * ul - List of all MenuSubItems
+   * li - MenuSubItems like reset ...
+   */
+  
+  ul#MenuBar {
+    margin: 0;    padding: 0; /*padding-left: 0.3em;*/
+    width: 100%;  height: 42px;
+    border: 1px solid #606060;
+    background-color: #001E64;
+    -moz-border-radius: 7px; -webkit-border-radius: 7px; -khtml-border-radius: 7px; border-radius: 7px;
+  }
+  
+  ul#MenuBar li {
+    margin: 0.5em;
+    padding: 0;
+    width: 10.9em;
+    list-style: none;
+    float: left;
+  }
+  
+  ul#MenuBar a {
+    margin: 0px;   padding: 0.3em 0.7em;
+    text-decoration: none;
+    font-weight: bold;
+    color: white;
+    border: 1px solid #001E64;/*#606060;*/
+    background-color: #001E64;
+    display: block;
+    /*-moz-border-radius: 7px; -webkit-border-radius: 7px; -khtml-border-radius: 7px; border-radius: 7px;*/
+  }
+  
+  ul#MenuBar li ul {
+    position: absolute;
+    margin: 0;     padding: 0;
+    display: none;
+  }
+  
+  /* by JavaScript
+  ul#MenuBar li:hover ul {
+    display: block;
+  }
+  */
+  
+  ul#MenuBar li ul li {
+    margin: 0;     padding: 0;
+    float: none;
+    display: block;
+  }
+  
+  ul#MenuBar a:hover {
+    color: #820A1E;
+  }

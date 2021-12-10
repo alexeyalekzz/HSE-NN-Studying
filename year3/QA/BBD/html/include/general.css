@@ -1,0 +1,89 @@
+/********************************************************************
+ *
+ * $Id: CarConfigurator, v 1.1 2012/03/20 16:01:28
+ *
+ * Copyright (C) 2012 Quality First Software
+ * All rights reserved
+ *
+ * Author: QFS (qfs@qfs.de), Yann Spoeri
+ *******************************************************************/
+ 
+ /*
+  * Generell CSS-Style for the webside
+  */
+  
+  /*
+   * Generell settings for all items
+   */
+  
+  * {
+    margin: 0;
+    padding: 0;
+    outline: 0;
+    font-family: Verdana,"Trebuchet MS",Arial,sans-serif;
+  }
+  
+  /*
+   * set the body color
+   */
+  
+  body {
+    background-color: #ffffff;
+  }
+  
+  #TabbedPane table {
+    border: 1px solid #606060;
+  }
+  
+  /*
+   * for the tables in the website
+   */
+  
+  td {
+    padding-left: 5px;
+    padding-right: 5px;
+    padding-top: 2px;
+    padding-bottom: 2px;
+  }
+  
+  /*
+   * all elements into a border (by a div)
+   */
+  
+  .borderforallstdelements {
+    width: 720px;
+    overflow: hidden;
+    border: 1px solid #606060;
+    background-color: #e6e6e6;
+    -moz-border-radius: 7px; -webkit-border-radius: 7px; -khtml-border-radius: 7px; border-radius: 7px;
+    padding-left: 10px; padding-right: 10px;
+    padding-top: 15px; padding-bottom: 15px;
+  }
+  
+  /*
+   * All other CSS-stuff is/was defined by jQuery, so I left it in jQuery-ui-....css or for the menubar in special in menubar.css
+   * although I changed the css a bit
+   */
+   
+  .OutputTextPane {
+    width: 200px;
+    border: 1px solid #e6e6e6;
+    background-color: #e6e6e6;
+    text-align: right;
+    font-family: Verdana,"Trebuchet MS",Arial,sans-serif;
+    font-size: 100%;
+  }
+  
+  // even, odd, hidden for tree table
+  
+  tr.even {
+    background-color: #e6e6e6;
+  }
+  
+  tr.odd {
+    background-color: #f2f2f2;
+  }
+  
+  tr.hidden {
+    display: none;
+  }
