@@ -7,8 +7,8 @@ from selenium.webdriver.common.by import By
 
 @given('Car configurator page is open')
 def step_impl(context):
-    driver = webdriver.Firefox()
-    driver.get("file:///D:\Programing\HSE-NN-Studying\year3\QA\BBD\html\CarConfig.htm")
+    # driver = webdriver.Firefox()
+    # driver.get("")
     context.driver = driver
     time.sleep(LATENCY)
 
