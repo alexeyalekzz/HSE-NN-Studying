@@ -1,0 +1,80 @@
+import * as React from "https://cdn.skypack.dev/react@17.0.1";
+import * as ReactDOM from "https://cdn.skypack.dev/react-dom@17.0.1";
+
+
+class InputField extends React.Component {
+  constructor(props) {
+    super(props)
+    this.state = { value: '' }
+    
+    this.handleSubmit = this.handleSubmit.bind(this)
+    this.handleChange = this.handleChange.bind(this)
+  }
+  
+  handleSubmit(e) {
+    this.props.handle(this.state.value)
+    this.setState({ value: '' })
+    e.preventDefault()
+  }
+  handleChange(e) {
+    this.setState({ value: e.target.value })
+  }
+  
+  render() {
+    return (
+      <form onSubmit={this.handleSubmit}>
+        <input type="text"
+          placeholder="Enter new task"
+          value={this.state.value}
+          onChange={this.handleChange}
+        />
+      </form>
+    ) 
+  }
+}
+
+function TaskList(props) {
+  return (
+    <div>
+        <ul onClick={e => props.handle(e.target.innerText)}>
+          {
+            props.data.map(
+              item => (<li key={item}>{item}</li>)
+            )
+          }
+      </ul>
+    </div>
+  )
+}
+
+class TaskManager extends React.Component {
+  constructor(props) {
+    super(props)
+    this.state = { tasks: [] }
+    
+    this.addTask = this.addTask.bind(this)
+    this.removeTask = this.removeTask.bind(this)
+  }
+  
+  addTask(task) {
+    if (task === "") return;
+    this.setState({ tasks: [...this.state.tasks, task] })
+  }
+  
+  removeTask(task) {
+    console.log(task)
+    this.setState({ tasks: this.state.tasks.filter(e => e != task) })
+  }
+  
+  render() {
+    return (
+      <div class="TaskManager">
+        <h1>Task Manager</h1>
+        <InputField handle={this.addTask} />
+        <TaskList data={this.state.tasks} handle={this.removeTask} />
+      </div>
+    );
+  }
+}
+
+ReactDOM.render(<TaskManager />, document.getElementById("root"))

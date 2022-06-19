@@ -1,0 +1,15 @@
+.App {
+  text-align: center;
+}
+
+.TaskManager {
+  text-align: center;
+}
+
+ul {
+  padding: 0;
+}
+
+li {
+  list-style-type: none;
+}
