@@ -1,0 +1,36 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 11.00
+# Visual Studio 2010
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Eco.GCode1", "Eco.GCode1.vcxproj", "{91280A25-71E3-4CA8-B5D9-0FD29D845937}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Eco.GCode1UnitTest", "Eco.GCode1UnitTest.vcxproj", "{61E67665-E722-4D6C-86B8-4023E20D4A09}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		DynamicDebug|Win32 = DynamicDebug|Win32
+		DynamicRelease|Win32 = DynamicRelease|Win32
+		StaticDebug|Win32 = StaticDebug|Win32
+		StaticRelease|Win32 = StaticRelease|Win32
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{91280A25-71E3-4CA8-B5D9-0FD29D845937}.DynamicDebug|Win32.ActiveCfg = DynamicDebug|Win32
+		{91280A25-71E3-4CA8-B5D9-0FD29D845937}.DynamicDebug|Win32.Build.0 = DynamicDebug|Win32
+		{91280A25-71E3-4CA8-B5D9-0FD29D845937}.DynamicRelease|Win32.ActiveCfg = DynamicRelease|Win32
+		{91280A25-71E3-4CA8-B5D9-0FD29D845937}.DynamicRelease|Win32.Build.0 = DynamicRelease|Win32
+		{91280A25-71E3-4CA8-B5D9-0FD29D845937}.StaticDebug|Win32.ActiveCfg = StaticDebug|Win32
+		{91280A25-71E3-4CA8-B5D9-0FD29D845937}.StaticDebug|Win32.Build.0 = StaticDebug|Win32
+		{91280A25-71E3-4CA8-B5D9-0FD29D845937}.StaticRelease|Win32.ActiveCfg = StaticRelease|Win32
+		{91280A25-71E3-4CA8-B5D9-0FD29D845937}.StaticRelease|Win32.Build.0 = StaticRelease|Win32
+		{61E67665-E722-4D6C-86B8-4023E20D4A09}.DynamicDebug|Win32.ActiveCfg = StaticRelease|Win32
+		{61E67665-E722-4D6C-86B8-4023E20D4A09}.DynamicDebug|Win32.Build.0 = StaticRelease|Win32
+		{61E67665-E722-4D6C-86B8-4023E20D4A09}.DynamicRelease|Win32.ActiveCfg = StaticRelease|Win32
+		{61E67665-E722-4D6C-86B8-4023E20D4A09}.DynamicRelease|Win32.Build.0 = StaticRelease|Win32
+		{61E67665-E722-4D6C-86B8-4023E20D4A09}.StaticDebug|Win32.ActiveCfg = StaticDebug|Win32
+		{61E67665-E722-4D6C-86B8-4023E20D4A09}.StaticDebug|Win32.Build.0 = StaticDebug|Win32
+		{61E67665-E722-4D6C-86B8-4023E20D4A09}.StaticRelease|Win32.ActiveCfg = StaticRelease|Win32
+		{61E67665-E722-4D6C-86B8-4023E20D4A09}.StaticRelease|Win32.Build.0 = StaticRelease|Win32
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

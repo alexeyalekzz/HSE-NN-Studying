@@ -1,0 +1,2 @@
+"C:\toolchain\avrdude-6.3\avrdude.exe" -C "C:\toolchain\avrdude-6.3\avrdude.conf" -v -p atmega328p -c arduino -P \\.\COM3 -b 115200 -D -U flash:w:..\..\..\BuildFiles\AVR8\Debug\Eco.GCode1UnitTest.hex:i
+pause
