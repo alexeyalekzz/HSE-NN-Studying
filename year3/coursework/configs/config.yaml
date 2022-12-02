@@ -1,0 +1,32 @@
+%YAML:1.0
+path: "./datasets/kitti/data_odometry_color/dataset/sequences/07/"
+gt_path: "./datasets/kitti/data_odometry_poses/dataset/poses/07.txt"
+calib_path: "./datasets/kitti/data_calib/sequences/07/calib.txt"
+start_frame: 0
+end_frame: 1100
+show_gt: true
+fx: 718.8560
+fy: 718.8560
+cx: 607.1928
+cy: 185.2157
+bf: -386.1448
+
+tracking_params: {
+        features_to_track: 300,
+        y_threshold: 40.0
+    }
+
+# If 1, use ORB as feature detector, otherwise FAST
+use_orb: 1
+orb_params: {
+        nfeatures: 1000,
+        scale_factor: 1.2,
+        pyr_levels: 8,
+        patch_size: 31,
+        fast_treshold: 20
+    }
+
+fast_params: {
+        threshold: 20,
+        nonmaxsuppression: true
+    }

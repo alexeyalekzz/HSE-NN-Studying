@@ -1,0 +1,12 @@
+[submodule "external/eigen"]
+	path = external/eigen
+	url = https://gitlab.com/libeigen/eigen
+[submodule "external/pangolin"]
+	path = external/pangolin
+	url = https://github.com/stevenlovegrove/Pangolin
+[submodule "external/ceres-solver"]
+	path = external/ceres-solver
+	url = https://github.com/ceres-solver/ceres-solver
+[submodule "external/glog"]
+	path = external/glog
+	url = https://github.com/google/glog
